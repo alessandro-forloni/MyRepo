@@ -13,13 +13,11 @@ from Requests_module import get_book, get_trades
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import mpl_tweak_module
 
 
-plt.rc_context({'axes.edgecolor':'green','axes.facecolor':'black', \
-                'ytick.color':'green','xtick.color':'green',       \
-                'grid.color':'grey', 'grid.linestyle':'--'})
-
-my_color = 'green'
+#Set matplolib features
+mpl_tweak_module.set_params()
 
 
 def stack(v, elem):
@@ -40,7 +38,7 @@ thresh = 0.005
 
 
 crypto = 'XRP'
-fiat = 'USD'
+fiat = 'EUR'
 
 bid_1 = np.zeros(N)
 bid_2 = np.zeros(N)
@@ -65,8 +63,8 @@ plt.show()
 
 while len(plt.get_fignums()) != 0: 
     
-    last_trade_bitstamp, timestamp_b = get_trades(crypto, fiat, 'Bitstamp')
-    last_trade_kraken, timestamp_k = get_trades(crypto, fiat, 'Kraken')
+    last_trade_bitstamp, timestamp_b, other = get_trades(crypto, fiat, 'Bitstamp')
+    last_trade_kraken, timestamp_k, other = get_trades(crypto, fiat, 'Kraken')
     bid_stamp, ask_stamp = get_book(crypto, fiat, 'Bitstamp')
     bid_kraken, ask_kraken = get_book(crypto, fiat, 'Kraken')
     
