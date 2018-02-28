@@ -12,6 +12,8 @@ import datetime
 
 def get_APIString(crypto, fiat, exchange, kind):
     
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #BITSTAMP
     if exchange == 'Bitstamp':
         
@@ -24,7 +26,9 @@ def get_APIString(crypto, fiat, exchange, kind):
             apiRoot = "https://www.bitstamp.net/api/v2/transactions/"
         
         api_String = apiRoot + crypto.lower() + fiat.lower()
-        
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
     #KRAKEN
     elif exchange == 'Kraken':
         
@@ -45,7 +49,33 @@ def get_APIString(crypto, fiat, exchange, kind):
         
         api_String = apiRoot + crypto + fiat      
         
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+    #GDAX
+    elif exchange == 'GDAX':
         
+        if crypto == 'XRP':
+            
+            #GDAX diesn't have ripple
+            return ''
+        
+        apiRoot = 'https://api.gdax.com/products/'
+        
+        
+        if kind == 'book':
+            
+             api_String = apiRoot + crypto +'-'+ fiat +'/book?level=1'
+        
+        elif kind == 'trades':
+            
+             api_String = apiRoot + crypto +'-'+ fiat +'/trades'
+        
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   
+    else:
+        
+        print('Exchange', exchange, 'not found')
+        return ''
+    
+    
     return api_String    
     
 
@@ -70,6 +100,7 @@ def get_trades(crypto, fiat, exchange):
             
     api_String = get_APIString(crypto, fiat, exchange, 'trades')
     
+    
     try:
         
         data = requests.get(api_String)
@@ -84,7 +115,22 @@ def get_trades(crypto, fiat, exchange):
             mult = 1*(side == 'b') - 1*(side == 's')
             
             last_volume = float(trades['result']['X' + crypto + 'Z' + fiat][-1][1])*mult
+        
+        
+        
+        elif exchange == 'GDAX':
             
+            last_trade = float(trades[0]['price'])
+            last_timestamp = trades[0]['time']
+            side  = trades[0]['side']
+            
+            mult = 1*(side == 'buy') - 1*(side == 'sell')
+            
+            last_volume = float(trades[0]['size'])*mult
+            
+            
+            
+        #Finish Bitstaaaamp!!!    
         else:
             
             last_trade = float(trades[0]['price'])
@@ -116,6 +162,11 @@ def get_book(crypto, fiat, exchange):
     
     
     api_String = get_APIString(crypto, fiat, exchange, 'book')
+    
+    
+    if exchange == 'GDAX' and crypto == 'XRP':
+    
+        return (0,0)
     
     try:
         
