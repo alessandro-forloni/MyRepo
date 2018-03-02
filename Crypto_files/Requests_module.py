@@ -143,8 +143,9 @@ def get_trades(crypto, fiat, exchange):
     
     except:
         
-        print (datetime.datetime.now(), 'No answer from', exchange) 
-        return 0, 0, 0
+         adesso = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H:%M:%S')
+         print adesso, 'No answer from', exchange, 'for trades'
+         return 0, 0, 0
     
     
 
@@ -162,11 +163,6 @@ def get_book(crypto, fiat, exchange):
     
     
     api_String = get_APIString(crypto, fiat, exchange, 'book')
-    
-    
-    if exchange == 'GDAX' and crypto == 'XRP':
-    
-        return (0,0)
     
     try:
         
@@ -191,6 +187,7 @@ def get_book(crypto, fiat, exchange):
     except:
         
         print (datetime.datetime.now(), 'No answer from', exchange) 
+        #Return something that clearly shows an issue or handle with exception
         return (0, 0)
    
     
@@ -253,4 +250,60 @@ def get_trade_history(crypto, fiat, exchange):
         
         print (datetime.datetime.now(), 'No answer from', exchange) 
         return [], [], [], []
+  
     
+    
+    
+    
+    
+    
+def get_book_depth(crypto, fiat, exchange, depth):
+    
+    
+     #Handle Bitcoin for Kraken
+    if exchange == 'Kraken' and crypto == 'BTC':
+              
+            crypto = 'XBT'
+    
+    
+    
+    api_String = get_APIString(crypto, fiat, exchange, 'book')
+    
+    try:
+        
+        data = requests.get(api_String)
+        ob = data.json()
+    
+        if exchange == 'Kraken':
+        
+            bid_side = ob['result']['X' + crypto + 'Z' + fiat]['bids'][:depth]
+            ask_side = ob['result']['X' + crypto + 'Z' + fiat]['asks'][:depth]
+            
+            #Transpose the result
+            z = map(list, zip(*bid_side))[:2]
+            #Concatenate lists
+            bid_now = reduce(lambda x,y: x+y, z)
+    
+            # NOW SME FOR THE ASK
+            
+            #Transpose the result
+            d = map(list, zip(*ask_side))[:2]
+            #Concatenate lists
+            ask_now = reduce(lambda x,y: x+y, d)
+    
+            
+        else:
+            
+            bid_now = float(ob['bids'][0][0])
+            ask_now = float(ob['asks'][0][0])
+    
+
+        return [float(x) for x in bid_now], [float(x) for x in ask_now]
+    
+    
+    except:
+        
+        adesso = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H:%M:%S')
+        print adesso, 'No answer from', exchange, 'for book'
+        
+        return (0, 0)    
