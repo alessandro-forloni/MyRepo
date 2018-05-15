@@ -1,0 +1,19 @@
+\BOOKMARK [1][-]{section*.2}{Acnowledgments}{}% 1
+\BOOKMARK [1][-]{section*.3}{Introduction}{}% 2
+\BOOKMARK [1][-]{section*.5}{Literature Review}{}% 3
+\BOOKMARK [1][-]{section*.6}{Our Approach}{}% 4
+\BOOKMARK [2][-]{section*.8}{The Data}{section*.6}% 5
+\BOOKMARK [3][-]{section*.9}{Some Descriptive Statistics}{section*.8}% 6
+\BOOKMARK [1][-]{section*.11}{Part 1: Strategy Selection}{}% 7
+\BOOKMARK [2][-]{section*.12}{Problem Statement}{section*.11}% 8
+\BOOKMARK [2][-]{section*.13}{Building the Features}{section*.11}% 9
+\BOOKMARK [2][-]{section*.14}{Relevant Features}{section*.11}% 10
+\BOOKMARK [2][-]{section*.17}{Switching Model}{section*.11}% 11
+\BOOKMARK [1][-]{section*.19}{Risk Allocation}{}% 12
+\BOOKMARK [2][-]{section*.20}{Method 1}{section*.19}% 13
+\BOOKMARK [3][-]{section*.23}{Implementation}{section*.20}% 14
+\BOOKMARK [1][-]{section*.28}{Appendix}{}% 15
+\BOOKMARK [2][-]{section*.29}{Shapiro-Wilks normality test}{section*.28}% 16
+\BOOKMARK [2][-]{section*.30}{Minimum Variance Portfolio}{section*.28}% 17
+\BOOKMARK [2][-]{section*.31}{Ledoit Wolf Covariance Matrix}{section*.28}% 18
+\BOOKMARK [2][-]{section*.32}{Random Forest Tree}{section*.28}% 19

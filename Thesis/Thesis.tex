@@ -1,0 +1,735 @@
+\documentclass[a4paper]{article}
+
+\usepackage{caption}
+\usepackage{subcaption}
+% accetta caratteri complicati tipo vocali accentate
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+
+%collegamenti ipertestuali
+\usepackage{hyperref}
+
+%tabelle
+\usepackage{booktabs}
+\usepackage{caption}
+
+%grafici
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+%matematica
+\usepackage{mathtools}
+\usepackage{amsmath}
+
+%stile di pagine
+\pagestyle{plain} %headings?
+
+%Notes
+\usepackage{fancyhdr}
+\usepackage{wrapfig}% layout
+\usepackage{graphicx}				%import images
+\usepackage[export]{adjustbox}
+\graphicspath{{Images/}}									% permet d'aller chercher des fichiers (utilise graphicx)
+\usepackage[colorinlistoftodos]{todonotes}						% pour faire des notes	
+\usepackage[toc,page]{appendix}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\usepackage{enumerate}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{a4paper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage[tt]{titlepic}
+\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{lastpage}
+\usepackage[labelformat=simple]{subcaption}
+%\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{bm}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{tasks}
+\usepackage{float}
+%\pagenumbering{gobble}
+
+
+\begin{document}
+
+\newcommand*\xbar[1]{%
+  \hbox{%
+    \vbox{%
+      \hrule height 0.5pt % The actual bar
+      \kern0.5ex%         % Distance between bar and symbol
+      \hbox{%
+        \kern-0.1em%      % Shortening on the left side
+        \ensuremath{#1}%
+        \kern-0.5em%      % Shortening on the right side
+      }%
+    }%
+  }%
+} 
+
+%\interfootnotelinepenalty=10000
+\begin{titlepage}
+	\vspace{50mm}
+	\begin{center}
+		\includegraphics[width=5cm]{Figures/EPFL_LOG.pdf}\\
+		\vspace{2cm}
+		%{\large{\bf }}\\
+		\vspace{5mm}
+		{\LARGE{\bf A Portfolio Allocation Framework \\ \vspace{5pt} for Algorithmic Trading Strategies}}\\
+		\vspace{3mm}
+		{\large{\bf Master Project}}\\
+		\vspace{19mm} {\large{\bf In cooperation with NAFORA SA}}
+	\end{center}
+	\vspace{40mm}
+	\par
+	\noindent
+	%\begin{center}
+
+			{\large{\bf Realized by: \\
+					ALESSANDRO DANIELE FORLONI\\ \vspace{10pt}
+					
+					\bf Supervised by: \\
+					YILIN HU and SEMYON MALAMUD\\ \vspace{10pt}
+				}}
+	%\end{center}
+	
+	\vspace{10mm}
+	\begin{center}
+		{\large{\bf Academic Year\\
+				2017/2018 }}
+	\end{center}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+
+\newpage
+
+\section*{Acnkowledgments}
+\addcontentsline{toc}{section}{Acnowledgments}
+
+\section*{Introduction}\label{intro}
+\addcontentsline{toc}{section}{Introduction}
+
+In this thesis we address the challenge of portfolio allocation applied to a set of trading algorithms. The aim here is to allocate risk to many algorithmic trading strategies on a weekly basis. The problem is to be solved in two seprate parts: firstly address at any moment in time which strategies out of the many available to put into production and at last assign proper risk weights to these strategies. We will see that both the steps are to be addressed with care as none of these problem if solved alone can achieve satisfactory results. All the results will be compared with a proper benchmark that mimics the current non-systematic allocation strategy. If the procedure is will be implemented it will make the whole investing process completely systematic. The weekly allocation period is chosen as it fits at best the charachteristics of the market of interest and it avoids incurring in excessive transaction costs arousing from daily rebalancing of the portfolio that would erase any improvement given by the selection methodology.\\
+The challenges that have been faced include the abundance of strategies and the well known issue that alpha in algorithmic trading strategies is not everlasting. There is a point in time at which any strategy will stop working and will necessarily be switched off, on the other hand, as a reaction to market changes, some strategies that in the past performed poorly might become alpha generators. Achieving optimal timing in putting into production and swithcing off the strategies represents a challenge but also an opportunity to substantially increase trading performance.This task is hard to perform in other ways than algorithmic selection because often what is selected might not look intuitive to trade at first sight. Inter-market relationships change through time. \todo{CONTROLLA CHE NON SIA UNA CAZZATA} For example, if one is trading on the well known relationship between Gold and US Government Bond (which is expected to be stedily meaningful and potentially a good source of alpha), it might be that due to some specific event this correlation breaks down, changing all the underlying market-dynamics and making the algorithms unprofitable. Moreover, in some cases, a certain strategy might perform really well for years until somebody in the market strats exploiting it systematically and at high frequency bringing liquidity and margin for trading out of the scope of hedge funds. In such cases detecting a switching point in the performance of strategies is of crucial importance.\\
+
+
+%IF WE NEED TO CITE SOMETHING USE: \cite{example}.
+
+\section*{Literature Review}
+\addcontentsline{toc}{section}{Literature Review}
+
+
+\section*{Our Approach}
+\addcontentsline{toc}{section}{Our Approach}
+
+The "schedule" we set at the beginning is to find firstly a satisfactory method to switch strategies on and off and then move to the part of weight allocation. We will consider the first step to be completed once the resulting selection allows for efficient trading of around a hundredth of strategies with at least half of the trading days with positive pnl.\\
+\todo{QUI E' TUTTO DA VERIFICARE ED AGGIORNARE}
+To achieve this step a simple and robust feature-based approach has been used. We decided not to try to use any hard-core machine learning type approach to reduce the risk of overfitting and to fit the specificity of the problem. In fact, the abundance of strategies and the lack of a long samples would have made traning a machine learning method cumbersome and time-consuming.\\
+Before getting into this part, relevant features are needed to give some predictive insight to our models. To this end we built several different features and evaluated their predictive power through a \textit{Random Forest Tree} (details of this model will be provided later).\\
+For what concerns assigning the weights we developed two different approaches, one of which is more computationally oriented and the other is more diversification-driven. The first approach is to train a genetic portfolio allocator that will select the best portfolio in-sample and then apply iy out of sample. The second approach is based on clustering, and aims at reducing as much as possible the realized variance of the portfolio.\\
+
+
+\subsection*{The data}
+\addcontentsline{toc}{subsection}{The Data}
+
+As mentioned before the dataset at hand consists of 13000 simulated strategies, based on mean-reversion. All these strategies are trading one futures against another one looking for relative mispricings. This number of strategies comes out of a simulation of all possible trading pairs among roughly 150 futures traded worldwide. The huge diversity among these strategies makes it hard to find a unique model to allocate risk among all of them. Diversification has to be applied not only to asset classes, but also taking into account type of algorithms, trading latency and underlying country or region of exposure.\\
+The data spans through almost six years, from January 2012 to August 2017. To perform the studies, the final year has been dropped to be used as a final validation set (also referred to as production set). The first remaining chunk has been divided into train and test set.\\
+We also decided to remove any strategy involved in swiss franc trading, to avoid our results to be biased by the famous drop that happened on the 15th of January 2015. We don't want to penalize or advantage any strategy that happened to be trading the swiss franc in either long or short side in that day because we believe that was a statistically unpredictable event. There is no guarantee that such an event could be forecasted only with information coming from strategy performance.\\
+
+\subsection*{Some Descriptive Statistics}
+\addcontentsline{toc}{subsubsection}{Some Descriptive Statistics}
+
+Here we want to give a taste of what our data looks like. We first run a code that computes sample statistics for all the strategies. The results are exposed in Table 1. 
+
+\begin{table}
+	\centering
+	\begin{tabular}{c|c|c|c|c|c}
+		Statistic   & Mean & Median & Min & Max & IQR \\\hline
+		Mean Return & -0.0002 & -0.0002 & -0.0032 & 0.0024 & 0.0002 \\ 
+		Skew        & -1.9393 & -1.698 & -34.2374 & 21.119 & 2.5754 \\ 
+		Kurtosis    & 56.9226 & 25.5496 & -5.4507 & 1202.95 & 37.851 \\ 
+		Sharpe Ratio& -1.3653 & -1.1725 & -20.0072 & 15.547 & 1.4080 \\ 
+		Sortino     &-1.3514 & -1.1808 & -32.9069 & 40.322 & 1.3692 \\ 
+	\end{tabular}
+	\caption{\label{tab:widgets} Global strategy statistics.}
+\end{table}
+
+We can see how on average the mean return per strategy is negative. The sharpe ratio of course follows this pattern as well. On the other hand we notice how some sharpes are very high (e have peaks at around 15 on the wole history!). Here an important remark must be made, many strategies with good performance seem really appealing, but for several reasons might not be tradable due to liquidity issues, regulation or asynchronization of quotes data.\\
+Back to our statistical analysis, we notice how the skew and kurtosis reach extreme values, signaling that the returns of these strategies might not be normally distributed. To this end we conducted a Shapiro-Wilks normality test for each strategy, where the null Hypothesis of normality is challenged (for details on this procedure refer to the Appendix). The results are the following:
+
+We can observe that for the majority of the cases the normality hypothesis is rejected. Some strategies survive the test, but a deeper analysis supports the idea that this is caused by a lack of data for these strategies. 
+
+\section*{Part 1: Strategy Selection}
+\addcontentsline{toc}{section}{Part 1: Strategy Selection}
+
+\subsection*{Problem Statement}
+\addcontentsline{toc}{subsection}{Problem Statement}
+
+We give here an additional re-statement of the problem we try to tackle here. On each monday we have to allocate risk on each of the given strategies by choosing which ones to put into production for the following week. In an ideal world we would switch on all the strategies that will perform well during the following week and vice-versa with the bad ones. Unfortunately this is quite an impossible task, and we just seek a "statistical edge" that allows us to profit from appropriate selection of strategies on the long run.\\
+
+\subsection*{Building the Features}
+\addcontentsline{toc}{subsection}{Building the Features}
+
+To be able to predict the performance of trading strategies we first need to build meaningful features that come out of a manipulation of the raw data. We start from simple performance metrics to advanced features computed on rolling windows. Here you can find a list with detailed information.
+
+\begin{itemize} 
+	\item \textit{Hit Ratio:} This feature computes the percentage of days with positive PnL over a certain rolling window. The higher the Hit Ratio, we expect that the higher the probability of positive returns in the future.\\ 
+	
+	\item \textit{Sharpe Ratio:}. This world-known measure comes as an evolution of the previous and is supposed to give some more information about the shape of the pnl line of a strategy. Intuition suggests that a strategy with high sharpe over long periods might continue providing gains in the foreseable future.\\
+	
+	\item \textit{Robust Sharpe Ratio} This feature is supposed to be a robust version of the sharpe ratio, computed trying to avoid the distorsive effects of outliers and measuremement errors. The formula is the following (given $\mathbf{r}$ of past returns):
+	
+		\begin{center} 
+			$\displaystyle Robust\_Sharpe =  \frac{med(\mathbf{r})}{IQR(\mathbf{r})}$
+		\end{center}
+		
+	Where $med$ stands for median and $IQR$ stands for interquantile range. Hopefully this feature should allow to ignore the non-normality of the distribution of returns and give a robust measure of performance.\\
+	
+	\item \textit{Exponetially Weighted Sharpe Ratio:}. This feature is an evolution of the simple sharpe ratio. It is computed as a roolling mean divided by a rolling standard deviation, calculated with exponential weighting. The rational between this choice is that an exponential sharpe should be able to capture faster changes in the evaluation of a performance of a strategy.\\
+	
+	  
+	\item \textit{Performance Quantile:} This feature looks on a rolling window at the performance over a certain horizon. This past performance is averaged at a daily level and compared with the distribution of past returns. The are some interesting dynamics that this fature should capture. For example if a strategy that has been trading with very good performance over the last years suddenly stops being profitable, this feature will immediately advise to switch the strategy off. On the contrary, a strategy that has been performing poorly suddently records some good performance, resulting in a high position in the historical distribution and some risk being allocated in production.\\   
+
+	\item \textit{Exponential Moving Average of PnL:} this feature is computed as the moving average over a certain period of the cumulative pnl line of a strategy weighted over history with exponential weighting. Given a time period $T$, a weight factor is computed as $k = \frac{2}{T+1}$ and the exponential moving average is computed as\\
+	
+	\begin{center} 
+		$\displaystyle EMA[i] =  \left(pnl\_curve[i] - EMA[i-1]\right)k + EMA[i-1]$
+	\end{center}
+	
+	Hopefully this feature should rapidly capture switching point in the performance of a strategy by looking at the difference betweek the pnl curve and its exponential moving average. An alternative could be to look at the crossing between moving averages, at the risk of switching late, but removing a good amount of noise.\\
+	
+	\item \textit{Tail Ratio:} This feature is computed as the ratio over a rolling window between the 95th and the absolute 5th percentile of the distribution of returns. The higher the tail ratio the more positively biased the distribution and the bigger the odds of getting positive weights by trading in the strategy. This feature has the really good characteristic of not being too sensitive to outliers allowing for a robust estimation of the strategy performance.\\
+	
+	\item \textit{Sortino Ratio:} Computed as the Sharpe ratio, but considering only the volatility of negative returns.\\ 
+	
+	\item \textit{Drawdown Mode:} This simple feature indicates whether a strategy is in drawdown or not. In other words it looks at the cumulative PnL of a given strategy and trades it when the current cumulative PnL is above the rolling max. More precisely, to give a bit more freedom in switching we allow the strategy to loose 2\% from the previous max before being switched off, to eliminate the effect of noise.\\
+	 
+\end{itemize}
+
+
+\subsection*{Relevant Features}
+\addcontentsline{toc}{subsection}{Relevant Features}	
+
+Once the features have been built we have to decide which ones give the more predictive power to solve out problem. Moreover we need to assess which rolling window is ideal for any feature to be able to forecast at best. The approach chosen at this stage is to use a \textit{Random Forest} model to rank these features. The idea is to feed this model with all the possible features and let the algorithm select the best ones. To dig more in detail on how this process can be applied, a discussion of random forest trees is appropriate. A decision tree is a machine learning model that can predict quantitative and $\{0,1\}$ outputs given a set of features. The model takes binary decisions based on the input features partitioning the sample into different "leaves" and assigns output values minimizing the impurity that is a measure of homogenety of the data (See the appendix for greater detail on ow the algorithm works). Their use in feature selection is abundant thanks to their simple approach abd their ability to model dependencies between features. If a tree, trained on some data, consistently splits based on the value of only one feature, it's a strong indication of importance of that feature. A Random forest uses the powerful concept of bootstrap on top of this model: it trains several trees, where any of these is trained only on a subset of the data sample and a subset of the features. The output is then the average split decision across all trees.\\
+For our problem we even went further adapting this model to our specific dataset that has few datapoints (6 years of daily returns) for many different strategies. What we did is to use the powerful Python library \textit{Scikit Learn} to train a random forest on each of the 13000 strategies at hand (only in our train sample). Once the tree is trained we retrieve the feature importances and we sum them up across all the strategies. Each tree will be feeded with all the features computed above with different rolling windows (in our case 30, 60, 90, 120, 180, 210, 250, 300 days). Before going to the results, two important steps must be taken. The first is to compute an output feature on which the tree can actually train on. We decided to use a binary output ($0/1$) that tells whether the strategy has a positive (1) or negative (0) returns over the following \todo{vedi se è il caso di cambiare} 20 trading days. We didn't limit the output to 5 trading days, even though it will be our final target, as the tree would have been subject to high noise, while the reliability of certain features should emerge on slightly longer terms.\\
+The last part to take care of before training the model is to clean the data. \todo{RICONTROLLA CON IL CODICE}We normalized the data, dropped extreme values and dropped strategies that had too few trading days, as these would haven't let the tree train properly.\\
+Once the tree had been trained we recorded the seven most important features: 
+
+
+Once we agreed on the relevant features we started building a model to predict which strategies to put into production each week.
+
+
+
+\subsection*{Switching Model}
+\addcontentsline{toc}{subsection}{Switching Model}
+
+
+As opposed to a traditional machine learning model, we want something more simple, interpretable and faster. Following the results of our random forest tree classifier we decided to base our robust threshold on Sharpe Ratios, Exponential Moving Averages and Quantile Performance.\\
+We run different tests (in our in-sample period) to see which meaningful combination of features could come up with a proper switching model. It turned out that using only one feature was not enough as the data is really diverse and many strategies have very poor performance, forcing our method to somehow filter them out. We directed our endeavours towards finding a meaningful filter of strategies. What this filter has to do, is to look at the past performance of any signle strategy and set a threshold below which even if the current performance is good this strategy would not be switched on. The reason for this is that many strategies have some very short period where they work well due to specific market conditions that don't last for long. We luckily have a huge wealth of strategies and we can afford being strict in selecting strategies giving more strength to our method. After some tests and discussions we decided that a good filter is given by a rolling-sharpe looking back for a certain period where the strategy performed significantly well. In other words, every monday the historical x-days sharpe ratio for each strategy is computed and if we are able to find  a period of x-days when a strategy performed sufficiently well in terms of sharpe we believe this is a strategy that can be switched on and off in the future. Once this filter is applied the remaining features are switched according...\todo{vediamo di trovare qualcosa che abbia sensoooo}
+
+
+\section*{Part 2: Risk Allocation}
+\addcontentsline{toc}{section}{Risk Allocation}
+
+Once we have a robust and trustable switching method, we can move our scope towards risk minimization, or in more precise terms, sharpe ratio maximization. We will build on top of the selected portfolio two different weights systems that will be benchmarked against a simple equally weighted portfolio and a Markowitz-like minimum variance portfolio (see appendix for building details). As it was for the switching problem, our aim is still to find the best out-of-sample portfolio for the following week (setting the new weights on monday) given information up to the previous friday. \\
+
+\subsection*{Method 1}
+\addcontentsline{toc}{subsection}{Method 1}
+
+The first method we try to implement is a Genetic-Leaning portfolio allocator. The method is based on the idea of making the algorithm evolve to find an optimal allocation through extensive genetic mutation. \todo{DESCRITTO DA QUALCUNO, CITA ATRICOLI}.The approach is rather brute-force as it tries to test as many portfolios as possible until the optimal one is found. A more human-like analogy is the following: the algorithm acts as a boss letting many portfolio managers allocate risk according to their views. As time passes the boss will evaluate the portfolio managers based on specific performance measures (that are not only raw pnl) and kicks out the worst performing. At each stage he tries to replace the worst portfolio managers with completely new ones and with a set of managers that trade similarly to the best ons. Let's dig into the underlying methodology: on each monday we face the challenge of assigning weights (between 0 and 1) to the set of tradable strategies. The algorithm is initialized  with a set of random portfolios $\mathbf{w} = (\mathbf{w_1} \dots \mathbf{w_N})$, where each $\mathbf{w_1}$ represents a feasible allocation of risk. The algorithm lets these portfolios trade over a certain window in the past and evaluates their performance. Once all of them have traded, the algorithm ranks them assigning a score given by a so-called \textit{Fitness Function}, which takes many metrics into account to evaluate a portfolio. Then the algorithm kicks out the worst performing, and substitutes them with a new generation (details on this part will be explaine later).\\ The procedure is repeated until an optimum is reached, or in other terms this optimizer is not able to find better portfolios. At this point the final portfolio will be an average of the best found portfolios.\\
+The name Genetic comes from the idea that natural selection and evolution are applied to the set of portfolios. If a portfolio is just bad it will not survive the selection step, while if a portfolio is good it will be challenged with a muted version of itself that might represent an evolutional step. This kind of approach has pros and cons, let's first evaluate the positive aspects:
+\begin{itemize}
+	\item The optimization carried in a way that is able to be conducted in a multidimentional space, in different local minima in parallel  avoiding the risk of missing a global minimum. The mutation happens in a way that optimization is more refined in well performing areas, while it is also randomized to cover the whole space
+	\item The algorithm is conceived in such a way that it serves really well our needs and requirements. Evaluating portfolios with the so called Fitness Function it allows to penalize portfolios that perform well but that give rise to the typical issues of portfolio optimization like instability of weights, poor diversification or meaningless negative weights. The optimization is already done without having to worry about any type of complex mathematical formulation to impose constraints.
+	\item The approach requires very little parameters: the length of the lookback window and the weights to give to any performance measure used to assess portfolio performance.
+	\item The algorithm might fully embrace the non-linearity of the problem and autonomously find relationships between strategies that other methods might not find. 
+\end{itemize}  
+
+On the other hand this method has some drawbacks:
+
+\begin{itemize}
+	\item This brute-force algorithm requires an enormous computing power to span the whole space and rank all the portfolio. Needless to say, we will notice later that the more computing time is given to the algoithm the more the randomness in it is limited and the performance improves. We will dig later in this aspect. \todo{CREA GRAFICO DI PERFORMANCE AL VARIARE DI N}
+	\item As outlined above, there is some randomness, as most of the portfolios that are tested are just randomly generated, so there is little chance to find a precise optimum, but rather something that is quite close to it
+	\item The algorithm looks backward and makes the assumption that the best performing combination in the past will still be the best for the next week.
+	\item Even though there are few parameters to be set, the algorithm is quite sensitive to these values.
+\end{itemize}
+
+\subsubsection*{Implementation}
+\addcontentsline{toc}{subsubsection}{Implementation}
+
+
+Let's now address the issue of defining the fitness function, this function that we will indicate with $f_f: \mathbb{R}^N \rightarrow \mathbb{R}$ is a function that given a portfolio vector $\mathbf{w}$ returns a real number as a score. This function is the core of the whole algorithm, because it can evaluate a portfolio based on its performance but also based on how this respects our requirement. For example it might penalize a portfolio that assigns a lot of weight to few strategies, or a portfolio that changes too much compared to what was traded the previous week. Defining this function in the proper way takes more intuition than calculation, and requires to pay attention to a couple of details. Of course, the more complex the fitness function the more our taste can be satisfied, but also the more computational time is required.\\
+We will evaluate the performance of the portfolio based on a mix of sharpe ratio and sortino ratio (achieved over a certain lookback period), somehow taking into account the diversification benefit of a portfolio allocation. We will also take into account how much a portfolio will be different from the previous one with a norm-1 penalty.
+\todo{vedi se - aggiungere altro}
+So our fitness function will look like:\\
+
+$$
+f_f = \alpha_1*sharpe(\mathbf{w}) + \alpha_2*sortino(\mathbf{w}) + \alpha_3*||\mathbf{w} - \mathbf{w_{old}}||
+$$
+
+Where $alpha_1$, $alpha_2$, and $alpha_3$ are weights on which no optimization will be carried to limit the computaional burden. $alpha_1$ and $alpha_3$ will be the same, while $alpha_3$ will be such that the influence on the portfolio is relevan but still not that big to prevent the portfolio form evolving. If a portfolio is really different to the one traded the previous week, requiring a complete rebalancing it has to be good enough to make us switch towards itself. 
+%\todo{Calcola differenza in media $||\mathbf{w} - \mathbf{w_{old}}||$ per vedere come settare a_3}
+
+\todo{Qui metti tipo di randomizzazione/replacement}\\
+\todo{Metti dettagli per definire l'ottimo}\\
+
+\section*{Results}
+
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+
+\subsection*{Shapiro-Wilks normality test}
+\addcontentsline{toc}{subsection}{Shapiro-Wilks normality test}
+
+As suggested by the name, the Shapiro-Wilks test checks if a sample is drawn from a normal distribution. More precisely, given a sample it tests $H_0$ (normality) versus the alternative hypothesis of non-normality. This test is ideal for our case as it doesn't require too much data to come to a conclusion. The test is non parametric and starts with sorting the data. Once the data is sorted, the test statistic can be computed:
+
+$$
+\displaystyle W = \frac{\left(\sum\limits_{i=1}^N a_{i}x_{(i)}\right)^2}{\sum\limits_{i=1}^N(x_i-\bar{x})^2}
+$$
+
+Each element has its specific meaning:
+\begin{itemize}
+	\item $\bar{x}$ is the sample mean of the data.
+	\item $x_{(i)}$ is the $i$-th order statistic. 
+	\item $a_i$ are tabulated coefficients coming out of the distribution of order statistics of a normal standard distribution.
+\end{itemize}
+
+The larger the statistic the more "normal" the data. This comes from the idea that the test wants to measure the similatity of the ordered statistics to those of a standard normal distribution. The W statistic somehow measures the closedness of these two entities.
+
+\subsection*{Minimum Variance Portfolio}
+\addcontentsline{toc}{subsection}{Minimum Variance Portfolio}
+
+Here we build the foundations of the Minimum Variance portfolio used as a benchmark to measure the relative performance of our weight assignment methods.\\
+Firstly, we set the problem in rigorous terms: given a set of N tradable instruments (in our case trading strategies) we want to find the optimal trading vector $\mathbf{w} = (\mathbf{w_1} \dots \mathbf{w_N})$ that represents the composition of our portfolio. This composition will optimally be the one that minimizes the in-sample variance of the portfolio. The latter is measured as:
+
+$$
+\sigma^2_\pi = \frac{1}{2} \mathbf{w}^T\mathbf{\Sigma} \mathbf{w}
+$$
+
+This optimization problem is usually solved under the constraint that the sum of the weights should be equal to one. We will solve the problem and then impose that the weights are also positive (it wouldn't make sense to trade strtegies with negative weights).\\
+The lagrangean to solve to minimize the variance is the following:
+
+$$
+\mathbf{L} = \frac{1}{2} \mathbf{w}^T\mathbf{\Sigma} \mathbf{w} - \lambda\left(\mathbf{1}^T\mathbf{w} - 1\right)
+$$
+
+Where $\mathbf{1}$ is a vector made up of ones.\\
+We compute the first order conditions:
+
+$$
+\frac{\partial \mathbf{L}}{\partial \mathbf{w}} = \mathbf{\Sigma} \mathbf{w} - \lambda\mathbf{1} = 0 \qquad  \frac{\partial \mathbf{L}}{\partial \lambda} = \mathbf{1}^T\mathbf{w} - 1 = 0
+$$
+
+From the first F.O.C. we immediately find:
+
+$$
+\mathbf{w} = \lambda \mathbf{\Sigma}^{-1} \mathbf{1}
+$$
+
+We plug this result into the other F.O.C.:
+
+$$
+\lambda \mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1} - 1 = 0 \Longrightarrow \lambda = \frac{1}{\mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1}}
+$$
+
+Therefore getting a nice analytical closed-form solution for our minimum variance portfolio:
+
+$$
+\mathbf{w} = \frac{\mathbf{\Sigma}^{-1} \mathbf{1}}{\mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1}}
+$$
+
+The beauty of this formula comes with some drawbacks:
+\begin{itemize}
+	\item $\mathbf{\Sigma}$ is often not precisely estimated due to the huge number of strategies and the little amount of samples to use to measure standard deviations and correlations. Moreover this matrix is not to invert leading to numerical errors. To partially address these issues we use a \textit{LedoitWolf} covariance matrix whose construction is explained in the next chapter.
+	\item This approach completely ignores transaction costs, leading to a fastly changing and unstable portfolio composition
+	\item The model works making a basic assumption: in-sample correlations and variances will hold out-of-sample with very simila values. Unfortunately this is rarely the case in the real world, making this portfolio sub-optimal in terms of variance.
+\end{itemize}
+
+\subsection*{Ledoit Wolf Covariance Matrix}
+\addcontentsline{toc}{subsection}{Ledoit Wolf Covariance Matrix}
+
+\subsection*{Random Forest Tree}
+\addcontentsline{toc}{subsection}{Random Forest Tree}
+
+As outlined before, the decision trees are an all-purpose machine learning algorithm able to be trained on extremely non-linear phenomena. The beauty of these algorithm lies in the simplicity of the underlying learning process, the data is split in "sectors" in a way that the highest "purity" is achieved. The Random forest algorithm adds robustness to this process. Let's first explore in detail the training process for a simple decision tree.\\
+
+\begin{itemize}
+	\item  Given an m-dimensional set of data with an output feature (we are in the case of supervised learning) examine all the possible splits on one feature.
+	\item Evaluate each split based on the purity of the splitted areas. This is done trough the \textit{Gini} impurity measure: $I_G = \sum\limits_{i=1}^N p_i(1-p_1)$, where $N$ is the number of labels/classes in the data.\\
+	Ths measure indicates how often a randomly chosen element from the set would be incorrectly labeled if it was randomly labeled according to the distribution of labels in the subset. This comes clear with the fact that the tree assigns probability to labels.
+	\item The purest split gives rise to a new node.
+	\item From this split others are generated until the highest purity or the maximum number of splits is achieved.\\
+\end{itemize}
+
+As it might emerge from this brief explanation, decision trees tend to overfit the data, as they learn very complex non linear-features. This behaviour is described in the context of the bias-variance trade-off where decision trees stand more in favor of variance rather than bias. Random forest try to overcome this issue by averaging many trees.\\
+Once we understood how a general decision tree is trained we can explore in depth the training of a random forest algorithm:
+
+\begin{itemize}
+	\item Generate M different trees.
+	\item Each tree is trained (as a normal decision tree) on a random subset of the features. This number is usually believed to be a fraction $\sqrt{n}/n$ where $n$ is the number of features.
+	\item The results from all the trees are averaged, that means that for each point the final label will be given by the average of all labels given by the different M trees. 
+\end{itemize}
+
+This robust procedure is useful to train powerful regressors or classifiers, but might be used as well to measure the forecasting ability of the input features. If a feature has real predictive power, it will be used in many bootstrapped samples to produce splits in the data, therefore being used many times. Computing the number of times each feature is used to produce a split will give a ranking of feature importances.\\
+
+\newpage
+%\section*{Appendix}
+\subsection*{Figures and Tables}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Figures/moving_average.eps}
+	\caption{Rolling average of the returns for 4 industries and Rf}
+	\label{rolling_average}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_mean.eps}
+	\caption{Arithmetic mean of simple returns}
+	\label{simple_means}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_geomean.eps}
+	\caption{Geometric mean of simple returns}
+	\label{simple_geomeans}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_std.eps}
+	\caption{Standard deviations of simple returns}
+	\label{simple_std}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_skew.eps}
+	\caption{Skewness of simple returns}
+	\label{simple_skew}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_kurt.eps}
+	\caption{Kurtosis of simple returns}
+	\label{simple_kurt}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_log_mean.eps}
+	\caption{Arithmetic mean of log returns}
+	\label{log_means}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_log_std.eps}
+	\caption{Standard deviation of log returns}
+	\label{log_std}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_log_skew.eps}
+	\caption{Skewness of log returns}
+	\label{log_skew}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{Figures/descriptive_statistics_log_kurt.eps}
+	\caption{Kurtosis of log returns}
+	\label{log_kurt}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/autocorr.eps}
+	\caption{Autocorrelation function for industry 'Other'}
+	\label{autocorr}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/cross_corr.eps}
+	\caption{Crosscorrelation function for two industries}
+	\label{crosscorr}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/aligned.eps}
+	\caption{Aligned returns following on the findings of Figure \ref{crosscorr}}
+	\label{aligned}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/prediction_portfolio.eps}
+	\caption{Trading strategy built on the prediction of future returns from other assets lagged returns}
+	\label{prediction}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance1.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance2.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance3.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance4.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance5.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance6.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance7.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance8.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance9.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/plot_performance10.eps}
+	\caption{Portfolios Cumulative performance}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/MKT_replication.eps}
+	\caption{Market replication portfolio}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/SMB_replication.eps}
+	\caption{SMB factor replication portfolio}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/HML_replication.eps}
+	\caption{HML factor replication portfolio}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/RMW_replication.eps}
+	\caption{RMW factor replication portfolio}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]
+    {Figures/ZERO_replication.eps}
+	\caption{Zero exposure portfolio}
+\end{figure}
+
+
+
+
+
+
+
+
+\clearpage
+
+\begin {table}[htbp]
+\begin{center}
+\input{Figures/industry_summary.tex}
+\end{center}
+\caption {Descriptive statistics for simple returns} \label{industry_summary} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/industry_log_summary.tex}
+\end{center}
+\caption {Descriptive statistics for log returns} \label{industry_log_summary} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/garch_summary.tex}
+\end{center}
+\caption {Ljung-Box Q-test results for GARCH(1,1), ARMA(1,1)-GARCH(1,1), MA(1)-GARCH(1,1), AR(1)-GARCH(1,1)}
+\label{garch_summary} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/gjr_summary.tex}
+\end{center}
+\caption {Ljung-Box Q-test results for GJR(1,1), ARMA(1,1)-GJR(1,1), MA(1)-GJR(1,1), AR(1)-GJR(1,1)}
+\label{gjr_summary} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/desc_stat_val.tex}
+\end{center}
+\caption {Descriptive statistics values for total returns}
+\label{desc_stat_val} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/desc_stat_rank.tex}
+\end{center}
+\caption {Descriptive statistics ranking for total returns}
+\label{desc_stat_rank} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/excess_stat_val.tex}
+\end{center}
+\caption {Descriptive statistics values for excess returns}
+\label{excess_stat_val} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/excess_stat_rank.tex}
+\end{center}
+\caption {Descriptive statistics ranking for excess returns}
+\label{excess_stat_rank} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/market_stat_val.tex}
+\end{center}
+\caption {Risk adjusted and model based risk measures values}
+\label{market_stat_val} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/market_stat_rank.tex}
+\end{center}
+\caption {Risk adjusted and model based risk measures ranking}
+\label{market_stat_rank} 
+\end {table}
+
+\begin{table}[htbp]
+\begin{center}
+	\input{Figures/CAPM.tex}
+\end{center}
+\caption {Risk factor exposures in the CAPM model}
+\label{CAPM} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/FF3.tex}
+\end{center}
+\caption {Risk factor exposures in the Fama-French 3-factor model}
+\label{FF3} 
+\end {table}
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/Carhart.tex}
+\end{center}
+\caption {Risk factor exposures in the Carhart model}
+\label{Carhart} 
+\end {table}
+
+
+\begin {table}[htbp]
+\begin{center}
+	\input{Figures/FF5.tex}
+\end{center}
+\caption {Risk factor exposures in the Fama-French 5-factor model}
+\label{FF5} 
+\end {table}
+
+
+
+\clearpage
+\bibliographystyle{unsrt} 
+\bibliography{Biblio.bib}
+
+
+
+\end{document}

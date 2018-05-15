@@ -1,0 +1,20 @@
+\select@language {english}
+\contentsline {section}{Acnowledgments}{2}{section*.2}
+\contentsline {section}{Introduction}{2}{section*.3}
+\contentsline {section}{Literature Review}{2}{section*.5}
+\contentsline {section}{Our Approach}{2}{section*.6}
+\contentsline {subsection}{The Data}{3}{section*.8}
+\contentsline {subsubsection}{Some Descriptive Statistics}{3}{section*.9}
+\contentsline {section}{Part 1: Strategy Selection}{4}{section*.11}
+\contentsline {subsection}{Problem Statement}{4}{section*.12}
+\contentsline {subsection}{Building the Features}{4}{section*.13}
+\contentsline {subsection}{Relevant Features}{6}{section*.14}
+\contentsline {subsection}{Switching Model}{6}{section*.17}
+\contentsline {section}{Risk Allocation}{7}{section*.19}
+\contentsline {subsection}{Method 1}{7}{section*.20}
+\contentsline {subsubsection}{Implementation}{8}{section*.23}
+\contentsline {section}{Appendix}{9}{section*.28}
+\contentsline {subsection}{Shapiro-Wilks normality test}{9}{section*.29}
+\contentsline {subsection}{Minimum Variance Portfolio}{9}{section*.30}
+\contentsline {subsection}{Ledoit Wolf Covariance Matrix}{11}{section*.31}
+\contentsline {subsection}{Random Forest Tree}{11}{section*.32}

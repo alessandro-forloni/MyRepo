@@ -1,0 +1,14 @@
+\select@language {english}
+\contentsline {section}{\numberline {1}Acnkowledgments}{}{section.1}
+\contentsline {section}{\numberline {2}Introduction}{}{section.2}
+\contentsline {section}{\numberline {3}Literature Review}{}{section.3}
+\contentsline {section}{\numberline {4}Our Approach}{}{section.4}
+\contentsline {subsection}{\numberline {4.1}The data}{}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Some Descriptive Statistics}{}{subsection.4.2}
+\contentsline {section}{\numberline {5}Part 1: Strategy Selection}{}{section.5}
+\contentsline {subsection}{\numberline {5.1}Problem Statement}{}{subsection.5.1}
+\contentsline {section}{\numberline {6}Part 2: Risk Allocation}{}{section.6}
+\contentsline {subsection}{\numberline {6.1}Different Approaches}{}{subsection.6.1}
+\contentsline {section}{\numberline {7}Results}{}{section.7}
+\contentsline {section}{\numberline {8}Appendix}{}{section.8}
+\contentsline {subsection}{\numberline {8.1}Figures and Tables}{}{subsection.8.1}
