@@ -1,0 +1,81 @@
+Let's adapt to our context a simple portfolio optimization problem. Let's consider two assets, in our case two algorithmic mean-reversion strategies (A and B for simplicity). For the moment, we consider a simple example where both the strategies have the same expected return $\mu_A = \mu_B = \mu$.
+The two strategies have a certain level of risk (measured historically): $\sigma_A$ and $\sigma_B$. Moreover (and more importantly) the two strategies exhibit in their PnL history a certain correlation expressed by the pearson coefficient $\rho$.\\
+Our portfolio will be a combination of A and B in a way that we allocate capital to both the strategies. The weight will be given in percentage terms ($\omega_A$ and $\omega_B$), that means, that we don't specify how much money will be put in the market, but we care about how will be the composition of the portfolio given a certain amount of capital.
+$$
+\Pi = \omega_A r_A + \omega_B r_B
+$$
+
+Here it is important to state clearly that we evaluate the portfolio in terms of risk-return trade-off and not only absolute return, therefore this modelling of a portfolio fits the problem.\\
+We will work now with variances instead of standard deviations because it comes more natural for calculations, and being the standard deviation a monotonic transformation of variance, the results will still apply. For us $r_A$ and $r_B$ are two potentially correlated random variables.\\
+The return on out portfolio will be:
+
+\begin{equation} \label{portfolio_return}
+\mu_\Pi = \omega_A \mu_A + \omega_B \mu_B 
+\end{equation} 
+
+While the variance of our portfolio will be as follows:
+
+\begin{equation} \label{portfolio_var}
+\sigma^2_\Pi = \omega_A^2 \sigma_A^2 + \omega_B^2 \sigma_B^2 + 2\rho \omega_A \omega_B\sigma_A \sigma_B
+\end{equation} 
+
+Here we can see how the correlation coefficient can actually help reduce the variance of the portfolio. To dig more in depth let's consider impose the natural constraint that $\omega_A$ and $\omega_B$ constitute the entire portfolio:
+
+
+\begin{equation} \label{eq1}
+\begin{split}
+\sigma^2_\Pi &= \omega_A^2 \sigma_A^2 + (1 - \omega_A)^2 \sigma_B^2 + 2\rho \omega_A (1 - \omega_A)\sigma_A \sigma_B \\
+             & = \omega_A^2(\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2) + 2\omega_A(\rho \sigma_A \sigma_B - \sigma_B^2) + \sigma_B^2
+\end{split}
+\end{equation}
+
+We will now solve for the optimal portfolio minimizing the variance: 
+
+\begin{equation} \label{eq2}
+\frac{\partial \sigma^2_\Pi }{\partial \omega_A} = 2\omega_A(\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2) + 2(\rho \sigma_A \sigma_B - \sigma_B^2) = 0
+\end{equation}
+
+This yields:
+
+\begin{equation} \label{eq3}
+\omega_A = \frac{\sigma_B^2-\rho \sigma_A \sigma_B}{\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2}
+\end{equation}
+
+We can check that this is actually a global minima by evaluating the second derivative:
+
+\begin{equation} \label{eq_second_derivative}
+\displaystyle \frac{\partial^2 \sigma^2_\Pi }{\partial \omega_A^2} = 2(\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2) >= 0 \qquad \forall \lvert \rho \rvert <= 1
+\end{equation}
+
+We will analyze these results with different values of $\rho$ to give some economic intuition. Let's start from the basic case:
+$\rho = 0$ that means the two strategies are uncorrelated. In this case \eqref{eq3} becomes:
+
+\begin{equation} \label{eq_rho_zero}
+\omega_A = \frac{\sigma_B^2}{\sigma_A^2 + \sigma_B^2}
+\end{equation}
+
+That means that weights are directly proportional two the variance of the other asset, or in other words, the higher the variance of an asset, the lower it's weight in the portfolio. In this case the overall variance of the portfolio will be simply a weighted average of the variances of the assets.\\
+
+Let's now consider the case where the two assets are perfectly correlated ($\rho = 1$).\\
+In this case \eqref{eq3} becomes:
+
+\begin{equation}
+\omega_A = \frac{\sigma_B^2-\sigma_A \sigma_B}{\sigma_A^2 - 2\sigma_A \sigma_B + \sigma_B^2} = \frac{\sigma_B}{\sigma_B - \sigma_A}
+\end{equation}
+ 
+Which is an interesting case if $\sigma_A=\sigma_B$ as the solution is non defined, and from equation \eqref{eq_second_derivative} we can see that the optimization line is flat, therefore any combination of portfolios will be "optimal".\\
+At last, let's consider the most interesting case: when $\rho = -1$. In this case \eqref{eq3} becomes:
+
+\begin{equation}
+\omega_A = \frac{\sigma_B^2-\sigma_A \sigma_B}{\sigma_A^2 + 2\sigma_A \sigma_B + \sigma_B^2} = \frac{\sigma_B}{\sigma_B + \sigma_A}
+\end{equation}
+
+Where the optimal weight on one strategy is directly proportional to the standard deviation of the other strategy. It is interesting to observe the total variance of the portfolio, using \eqref{portfolio_var}:
+
+\begin{equation} 
+\sigma^2_\Pi = \left(\frac{\sigma_B}{\sigma_B + \sigma_A}\right)^2 \sigma_A^2 +  \left(\frac{\sigma_A}{\sigma_B + \sigma_A}\right)^2        \sigma_B^2 - 2 \left(\frac{\sigma_B}{\sigma_B + \sigma_A}\right)  \left(\frac{\sigma_A}{\sigma_B + \sigma_A}\right)\sigma_A \sigma_B = 0
+\end{equation}
+
+In this extreme case we can find a portfolio with zero variance!
+Anyway, the key take away is that with correlations smaller than one we can achieve portfolio variances that are lower than just a simple weighted average of the variances. This is referred to as the \textit{Diversification Benefit}. We spread out the risk in different points in time resulting in a portfolio that is well-diversified and compensates losses on some assets with gains on other strategies.\\
+For our prject another point of view is that given a certain correlation we can almost always find a portfolio that minimizes the variance for a given level of return.\\

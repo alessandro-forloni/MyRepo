@@ -1,0 +1,25 @@
+We will propose an evolution of the basic case that reduces the search space and adds some robustness. The idea is that instead of swithcing strategies on and off based on the Sharpe Ratio being above a certain threshold, we care about ranking the performance of strategies making the assumption that the best ones will still perform well. There are two reasons why this choice makes sense: first of all ranking removes the burden of optimizing some parameters reducing the risk of overfitting. Secondarily, ranking is a much robust statistics than simple threshold, we expect therefore that this method will perform better out of sample. We still have to apply a first filter as for the previous case (fixing the parameters as they have been chosen for method 1), then we will grid-search for an optimal window where strategies are ranked by Sharpe Ratio.\\
+Notice that we also have to set a parameter that is the number of strategies that will be considered best ones after being ranked. The idea here is that this number is given by what the in-company execution system can withstand, that is about 50 strategies per week. More precisely we will select the top 50 strategies (out of 13000!) but only if their sharpe-ratio is still positive in the last period.
+
+\begin{center}
+	\centering
+    \includegraphics[width=0.6\textwidth]{GridSearches/Sharpe_Ranking/Figure_1.jpeg}
+	\captionof{figure}{GridSearch for the two windows of the Sharpe Ratio}
+	\label{Sharpe_Ranking_1}
+\end{center}
+
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{GridSearches/Sharpe_Ranking/Figure_2.jpeg}
+	\captionof{figure}{GridSearch for one window vs the threshold for the Sharpe Ratio}
+	\label{Sharpe_Ranking_2}
+\end{center}
+
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{GridSearches/Sharpe_Ranking/Figure_3.jpeg}
+	\captionof{figure}{GridSearch for one window vs the threshold for the Sharpe Ratio}
+	\label{Sharpe_Ranking_3}
+\end{center}
+
+As we can see the performance is on average much better, but also the results are more reliable. The in-sample gridsearch suggests that the optimal value for the filtering Sharpe is about 350 trading days, while for the threshold the ideal value seems to be in the 2.5/3 area. The length of the window for the Sharpe ratio used to rank doesn't seem to be extremely relevant but still it seems  to suggest that optimal values might be in the 90s.\\

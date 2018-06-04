@@ -1,0 +1,40 @@
+Once the features have been built we have to decide which ones give the more predictive power to solve our problem. Moreover we need to assess which rolling window is ideal for any feature to be able to forecast at best. The approach chosen at this stage is to use a \textit{Random Forest} model to rank these features. The idea is to feed this model with all the possible features and let the algorithm select the best ones. To dig more in detail on how this process can be applied, a discussion of random forest trees is appropriate. A decision tree is a machine learning model that can predict quantitative and $\{0,1\}$ outputs given a set of features. The model takes binary decisions based on the input features partitioning the sample into different "leaves" and assigns output values minimizing the impurity that is a measure of homogenety of the data (See the appendix for greater detail on ow the algorithm works). Their use in feature selection is abundant thanks to their simple approach abd their ability to model dependencies between features. If a tree, trained on some data, consistently splits based on the value of only one feature, it's a strong indication of importance of that feature. A Random forest uses the powerful concept of bootstrap on top of this model: it trains several trees, where any of these is trained only on a subset of the data sample and a subset of the features. The output is then the average split decision across all trees.\\
+For our problem we even went further adapting this model to our specific dataset that has few data points (6 years of daily returns) for many different strategies. What we did is to use the powerful Python library \textit{Scikit Learn} to train a random forest on each of the 13000 strategies at hand (only in our train sample). Once the tree is trained we retrieve the feature importances and we sum them up across all the strategies. Each tree will be feeded with all the features computed above with different rolling windows (in our case 30, 60, 90, 120, 180, 210, 250, 300 days). Before going to the results, two important steps must be taken. The first is to compute an output feature on which the tree can actually train on. We decided to use a binary output ($0/1$) that tells whether the strategy has a positive (1) or negative (0) returns over the following 5 trading days. %We didn't limit the output to 5 trading days, even though it will be our final target, as the tree would have been subject to high noise, while the reliability of certain features should emerge on slightly longer terms.\\
+The last part to take care of before training the model is to clean the data. We normalized the data, dropped extreme values and dropped strategies that had too few trading days, as these would haven't let the tree train properly. Moreover, to be consistent we restricted our study to the in-sample period.\\
+Once the tree had been trained we recorded the most important features, these can be seen in Table \ref{table:feature}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{c|c}
+		Feature & Importance \\\hline \hline
+		Rolling Sharpe 350 & 0.04 \\ 
+		Rolling Sharpe 250 & 0.0388 \\ 
+		Rolling Sharpe 300 & 0.0387 \\ 
+		Tail Ratio 60 & 0.0385 \\ 
+		Tail Ratio 180 & 0.0385 \\ 
+		Tail Ratio 90 & 0.0385 \\ 
+		Rolling Sharpe 180 & 0.0385 \\ 
+		Tail Ratio 120 & 0.0381 \\ 
+		Rolling Sharpe 120 & 0.0379 \\ 
+		Tail Ratio 350 & 0.0379 \\ 
+		Tail Ratio 250 & 0.0378 \\ 
+		Tail Ratio 300 & 0.0377 \\ 
+		Rolling Sharpe 90 & 0.0373 \\ 
+		Rolling Sharpe 60 & 0.0368 \\ 
+		Exp Sharpe 350 & 0.0362 \\ 
+		Exp Sharpe 60 & 0.0351 \\ 
+		Exp Sharpe 300 & 0.0346 \\ 
+		Exp Sharpe 250 & 0.0337 \\ 
+		Exp Sharpe 90 & 0.0334 \\ 
+		Exp Sharpe 180 & 0.0331 \\ 
+		Exp Sharpe 120 & 0.033 \\ 
+		Hit Ratio 350 & 0.0264 \\ 
+		Hit Ratio 250 & 0.0264 \\ 
+	\end{tabular}
+	\caption{ Top 25 Features selected by the Random Forest Tree.}
+	\label{table:feature}
+\end{table}
+
+
+We can see how the sharpe ratio dominates any other feature, establishing itself as the most powerful feature. Moreover we notice how the exponential moving average and robust sharpe ratio have very low predictive power. It is really interesting to observe how the relevance of features increases with the window, even if our aim is to predict over a very short period.\\
+Once we agreed on the relevant features we started building a model to predict which strategies to put into production each week. We will not focus only on sharpe but we will still proceed in our work keeping in mind the hints given by this powerful tool.\\

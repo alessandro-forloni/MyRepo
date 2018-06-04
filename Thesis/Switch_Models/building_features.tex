@@ -1,0 +1,35 @@
+To be able to predict the performance of trading strategies we first need to build meaningful features that come out of a manipulation of the raw data. We start from simple performance metrics to advanced features computed on rolling windows. Here you can find a list with detailed information.
+
+\begin{itemize} 
+	\item \textit{Hit Ratio:} This feature computes the percentage of days with positive PnL over a certain rolling window. The higher the Hit Ratio, we expect that the higher the probability of positive returns in the future.\\ 
+	
+	\item \textit{Sharpe Ratio:}. This world-known measure comes as an evolution of the previous and is supposed to give some more information about the shape of the pnl line of a strategy. Intuition suggests that a strategy with high sharpe over long periods might continue providing gains in the foreseable future.\\
+	
+	\item \textit{Robust Sharpe Ratio} This feature is supposed to be a robust version of the sharpe ratio, computed trying to avoid the distorsive effects of outliers and measuremement errors. The formula is the following (given $\mathbf{r}$ of past returns):
+	
+		\begin{center} 
+			$\displaystyle Robust\_Sharpe =  \frac{med(\mathbf{r})}{IQR(\mathbf{r})}$
+		\end{center}
+		
+	Where $med$ stands for median and $IQR$ stands for interquantile range. Hopefully this feature should allow to ignore the non-normality of the distribution of returns and give a robust measure of performance.\\
+	
+	\item \textit{Exponetially Weighted Sharpe Ratio:}. This feature is an evolution of the simple sharpe ratio. It is computed as a roolling mean divided by a rolling standard deviation, calculated with exponential weighting. The rational between this choice is that an exponential sharpe should be able to capture faster changes in the evaluation of a performance of a strategy.\\
+	
+	  
+	\item \textit{Performance Quantile:} This feature looks on a rolling window at the performance over a certain horizon. This past performance is averaged at a daily level and compared with the distribution of past returns. The are some interesting dynamics that this fature should capture. For example if a strategy that has been trading with very good performance over the last years suddenly stops being profitable, this feature will immediately advise to switch the strategy off. On the contrary, a strategy that has been performing poorly suddently records some good performance, resulting in a high position in the historical distribution and some risk being allocated in production.\\   
+
+	\item \textit{Exponential Moving Average of PnL:} this feature is computed as the moving average over a certain period of the cumulative pnl line of a strategy weighted over history with exponential weighting. Given a time period $T$, a weight factor is computed as $k = \frac{2}{T+1}$ and the exponential moving average is computed as\\
+	
+	\begin{center} 
+		$\displaystyle EMA[i] =  \left(pnl\_curve[i] - EMA[i-1]\right)k + EMA[i-1]$
+	\end{center}
+	
+	Hopefully this feature should rapidly capture switching point in the performance of a strategy by looking at the difference betweek the pnl curve and its exponential moving average. An alternative could be to look at the crossing between moving averages, at the risk of switching late, but removing a good amount of noise.\\
+	
+	\item \textit{Tail Ratio:} This feature is computed as the ratio over a rolling window between the 95th and the absolute 5th percentile of the distribution of returns. The higher the tail ratio the more positively biased the distribution and the bigger the odds of getting positive weights by trading in the strategy. This feature has the really good characteristic of not being too sensitive to outliers allowing for a robust estimation of the strategy performance.\\
+	
+	\item \textit{Sortino Ratio:} Computed as the Sharpe ratio, but considering only the volatility of negative returns.\\ 
+	
+	\item \textit{Drawdown Mode:} This simple feature indicates whether a strategy is in drawdown or not. In other words it looks at the cumulative PnL of a given strategy and trades it when the current cumulative PnL is above the rolling max. More precisely, to give a bit more freedom in switching we allow the strategy to loose 2\% from the previous max before being switched off, to eliminate the effect of noise.\\
+	 
+\end{itemize}
