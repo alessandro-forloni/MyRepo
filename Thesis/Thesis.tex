@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[12pt]{article} %[a4paper]{article}
 
 \usepackage{caption}
 \usepackage{subcaption}
@@ -201,141 +201,52 @@ We can observe that for the majority of the cases the normality hypothesis is re
 
 \subsection{Risk and Return}
 
-We want to establish the classical Portfolio Theory as a starting point of our work. Understanding the advantages and drawbacks of this theory will allow us to better explain some choices that have been made while developing our portfolio model. As for any rational investor we try to think in terms of risk and return. The return is a measure of how much money we will make investing in our portfolio, while the risk is a measure of how unstable our money-making model is. The latter is traditionally measured in terms of variance of portfolio returns, that's why we refer to a \textit{Mean-Variance} problem. We will illustrate later how covariance between assets in a portfolio plays a crucial role. The idea is that given a certain level of risk we will try to get out the highest return, or on the other direction, given a certain level of desired return, we will try to minimize the risk of our portfolio. The traditional Markowitz theory establishes a clear and intuitive relationship between risk and return that allows any investor to find an optimal allocation given a certain level of risk or return.\\
-For our specific case, where strategies are our assets to which we allocate risk we will consider as return the amount of PnL given by a strategy on a certain day, divided by the amount of capital allocated to the strategy.
-$$
-r_i = \frac{PnL_i}{Allocated \quad capital}
-$$
-So our expected return will be:
-$$
-\mu = \frac{1}{N}\sum\limits_{i=1}^N r_i
-$$
-On the other hand, a simple measure of risk will be the standard deviation of returns:
-$$
-\sigma = \frac{1}{N}\sum\limits_{i=1}^N (r_i - \mu)^2
-$$
-
-We will here make a fundamental assumption, since it is arguably extremely hard to forecast future returns of strategies, we will consider past returns as a proxy for future returns.\\
+\input{Portfolio_Theory/Risk_n_Return}
 
 \subsection{A simple two-asset example}
 
-Let's adapt to our context a simple portfolio optimization problem. Let's consider two assets, in our case two algorithmic mean-reversion strategies (A and B for simplicity). For the moment, we consider a simple example where both the strategies have the same expected return $\mu_A = \mu_B = \mu$.
-The two strategies have a certain level of risk (measured historically): $\sigma_A$ and $\sigma_B$. Moreover (and more importantly) the two strategies exhibit in their PnL history a certain correlation expressed by the pearson coefficient $\rho$.\\
-Our portfolio will be a combination of A and B in a way that we allocate capital to both the strategies. The weight will be given in percentage terms ($\omega_A$ and $\omega_B$), that means, that we don't specify how much money will be put in the market, but we care about how will be the composition of the portfolio given a certain amount of capital.
-$$
-\Pi = \omega_A r_A + \omega_B r_B
-$$
+\input{Portfolio_Theory/two_assets}
 
-Here it is important to state clearly that we evaluate the portfolio in terms of risk-return trade-off and not only absolute return, therefore this modelling of a portfolio fits the problem.\\
-We will work now with variances instead of standard deviations because it comes more natural for calculations, and being the standard deviation a monotonic transformation of variance, the results will still apply. For us $r_A$ and $r_B$ are two potentially correlated random variables. The variance of our portfolio will be as follows:
+\subsection{Extending to N assets}
 
-$$
-\sigma^2_\Pi = \omega_A^2 \sigma_A^2 + \omega_B^2 \sigma_B^2 + 2\rho \omega_A \omega_B\sigma_A \sigma_B
-$$
-
-Here we can see how the correlation coefficient can actually help reduce the variance of the portfolio. To dig more in depth let's consider impose the natural constraint that $\omega_A$ and $\omega_B$ constitute the entire portfolio:
+\input{Portfolio_Theory/N_assets}
 
 
-\begin{equation} \label{eq1}
-\begin{split}
-\sigma^2_\Pi &= \omega_A^2 \sigma_A^2 + (1 - \omega_A)^2 \sigma_B^2 + 2\rho \omega_A (1 - \omega_A)\sigma_A \sigma_B \\
-             & = \omega_A^2(\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2) + 2\omega_A(\rho \sigma_A \sigma_B - \sigma_B^2) + \sigma_B^2
-\end{split}
-\end{equation}
+\subsection{The risk-free asset}
 
-We will now solve for the optimal portfolio minimizing the variance: 
 
-\begin{equation} \label{eq2}
-\frac{\partial \sigma^2_\Pi }{\partial \omega_A} = 2\omega_A(\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2) + 2(\rho \sigma_A \sigma_B - \sigma_B^2) = 0
-\end{equation}
-
-This yields:
-
-\begin{equation} \label{eq3}
-\omega_A = \frac{\sigma_B^2-\rho \sigma_A \sigma_B}{\sigma_A^2 - 2\rho \sigma_A \sigma_B + \sigma_B^2}
-\end{equation}
-
-We will analyze these results with different values of $\rho$ to give some economic intuition. Let's start from the basic case:
-$\rho = 0$ that means the two strategies are uncorrelated. In this case \eqref{eq3} becomes:
-
-\begin{equation} \label{eq_rho_zero}
-\omega_A = \frac{\sigma_B^2}{\sigma_A^2 + \sigma_B^2}
-\end{equation}
-
-That means that weights are directly proportional two the variance of the other asset, or in other words, the higher the variance of an asset, the lower it's weight in the portfolio. In this case the overall variance of the portfolio will be simply a weighted average of the variances of the assets.\\
-
-Let's now consider the case where the two assets are perfectly correlated ($\rho = 1$).
- 
 \subsection{Performance Metrics}
 
+\subsection{Why aren't minimum variance portfolios optimal?}
 
 
 \section{Part 1: Strategy Selection}
 %\addcontentsline{toc}{section}{Part 1: Strategy Selection}
 
-\subsection*{Problem Statement}
-\addcontentsline{toc}{subsection}{Problem Statement}
+\subsection{Problem Statement}
+%\addcontentsline{toc}{subsection}{Problem Statement}
 
 We give here an additional re-statement of the problem we try to tackle here. On each monday we have to allocate risk on each of the given strategies by choosing which ones to put into production for the following week. In an ideal world we would switch on all the strategies that will perform well during the following week and vice-versa with the bad ones. Unfortunately this is quite an impossible task, and we just seek a "statistical edge" that allows us to profit from appropriate selection of strategies on the long run.\\
 For this first part we focus only on activating or de-activating the algorithms, we don't care about the risk weight to give to strategies (the output will be a $\{1,0\}$ signal).
 
-\subsection*{Building the Features}
-\addcontentsline{toc}{subsection}{Building the Features}
+\subsection{Building the Features}
+%\addcontentsline{toc}{subsection}{Building the Features}
 
-To be able to predict the performance of trading strategies we first need to build meaningful features that come out of a manipulation of the raw data. We start from simple performance metrics to advanced features computed on rolling windows. Here you can find a list with detailed information.
-
-\begin{itemize} 
-	\item \textit{Hit Ratio:} This feature computes the percentage of days with positive PnL over a certain rolling window. The higher the Hit Ratio, we expect that the higher the probability of positive returns in the future.\\ 
-	
-	\item \textit{Sharpe Ratio:}. This world-known measure comes as an evolution of the previous and is supposed to give some more information about the shape of the pnl line of a strategy. Intuition suggests that a strategy with high sharpe over long periods might continue providing gains in the foreseable future.\\
-	
-	\item \textit{Robust Sharpe Ratio} This feature is supposed to be a robust version of the sharpe ratio, computed trying to avoid the distorsive effects of outliers and measuremement errors. The formula is the following (given $\mathbf{r}$ of past returns):
-	
-		\begin{center} 
-			$\displaystyle Robust\_Sharpe =  \frac{med(\mathbf{r})}{IQR(\mathbf{r})}$
-		\end{center}
-		
-	Where $med$ stands for median and $IQR$ stands for interquantile range. Hopefully this feature should allow to ignore the non-normality of the distribution of returns and give a robust measure of performance.\\
-	
-	\item \textit{Exponetially Weighted Sharpe Ratio:}. This feature is an evolution of the simple sharpe ratio. It is computed as a roolling mean divided by a rolling standard deviation, calculated with exponential weighting. The rational between this choice is that an exponential sharpe should be able to capture faster changes in the evaluation of a performance of a strategy.\\
-	
-	  
-	\item \textit{Performance Quantile:} This feature looks on a rolling window at the performance over a certain horizon. This past performance is averaged at a daily level and compared with the distribution of past returns. The are some interesting dynamics that this fature should capture. For example if a strategy that has been trading with very good performance over the last years suddenly stops being profitable, this feature will immediately advise to switch the strategy off. On the contrary, a strategy that has been performing poorly suddently records some good performance, resulting in a high position in the historical distribution and some risk being allocated in production.\\   
-
-	\item \textit{Exponential Moving Average of PnL:} this feature is computed as the moving average over a certain period of the cumulative pnl line of a strategy weighted over history with exponential weighting. Given a time period $T$, a weight factor is computed as $k = \frac{2}{T+1}$ and the exponential moving average is computed as\\
-	
-	\begin{center} 
-		$\displaystyle EMA[i] =  \left(pnl\_curve[i] - EMA[i-1]\right)k + EMA[i-1]$
-	\end{center}
-	
-	Hopefully this feature should rapidly capture switching point in the performance of a strategy by looking at the difference betweek the pnl curve and its exponential moving average. An alternative could be to look at the crossing between moving averages, at the risk of switching late, but removing a good amount of noise.\\
-	
-	\item \textit{Tail Ratio:} This feature is computed as the ratio over a rolling window between the 95th and the absolute 5th percentile of the distribution of returns. The higher the tail ratio the more positively biased the distribution and the bigger the odds of getting positive weights by trading in the strategy. This feature has the really good characteristic of not being too sensitive to outliers allowing for a robust estimation of the strategy performance.\\
-	
-	\item \textit{Sortino Ratio:} Computed as the Sharpe ratio, but considering only the volatility of negative returns.\\ 
-	
-	\item \textit{Drawdown Mode:} This simple feature indicates whether a strategy is in drawdown or not. In other words it looks at the cumulative PnL of a given strategy and trades it when the current cumulative PnL is above the rolling max. More precisely, to give a bit more freedom in switching we allow the strategy to loose 2\% from the previous max before being switched off, to eliminate the effect of noise.\\
-	 
-\end{itemize}
+\input{Part_1/building_features}
 
 
-\subsection*{Relevant Features}
-\addcontentsline{toc}{subsection}{Relevant Features}	
+\subsection{Relevant Features}
+%\addcontentsline{toc}{subsection}{Relevant Features}	
 
-Once the features have been built we have to decide which ones give the more predictive power to solve our problem. Moreover we need to assess which rolling window is ideal for any feature to be able to forecast at best. The approach chosen at this stage is to use a \textit{Random Forest} model to rank these features. The idea is to feed this model with all the possible features and let the algorithm select the best ones. To dig more in detail on how this process can be applied, a discussion of random forest trees is appropriate. A decision tree is a machine learning model that can predict quantitative and $\{0,1\}$ outputs given a set of features. The model takes binary decisions based on the input features partitioning the sample into different "leaves" and assigns output values minimizing the impurity that is a measure of homogenety of the data (See the appendix for greater detail on ow the algorithm works). Their use in feature selection is abundant thanks to their simple approach abd their ability to model dependencies between features. If a tree, trained on some data, consistently splits based on the value of only one feature, it's a strong indication of importance of that feature. A Random forest uses the powerful concept of bootstrap on top of this model: it trains several trees, where any of these is trained only on a subset of the data sample and a subset of the features. The output is then the average split decision across all trees.\\
-For our problem we even went further adapting this model to our specific dataset that has few data points (6 years of daily returns) for many different strategies. What we did is to use the powerful Python library \textit{Scikit Learn} to train a random forest on each of the 13000 strategies at hand (only in our train sample). Once the tree is trained we retrieve the feature importances and we sum them up across all the strategies. Each tree will be feeded with all the features computed above with different rolling windows (in our case 30, 60, 90, 120, 180, 210, 250, 300 days). Before going to the results, two important steps must be taken. The first is to compute an output feature on which the tree can actually train on. We decided to use a binary output ($0/1$) that tells whether the strategy has a positive (1) or negative (0) returns over the following \todo{vedi se è il caso di cambiare} 20 trading days. We didn't limit the output to 5 trading days, even though it will be our final target, as the tree would have been subject to high noise, while the reliability of certain features should emerge on slightly longer terms.\\
-The last part to take care of before training the model is to clean the data. \todo{RICONTROLLA CON IL CODICE}We normalized the data, dropped extreme values and dropped strategies that had too few trading days, as these would haven't let the tree train properly. Moreover, to be consistent we restricted our study to the in-sample period.\\
-Once the tree had been trained we recorded the seven most important features: 
-
-\todo{QUI GRAFICO/TABELLA FEATURES}
-
-We can see how the sharpe ratio dominates any other feature, establishing itself as the most powerful feature. Moreover we notice how the exponential moving average and robust sharpe ratio have very low predictive power. It is really interesting to observe how the relevance of features increases with the window, even if our aim is to predict over a very short period.\\
-Once we agreed on the relevant features we started building a model to predict which strategies to put into production each week. We will not focus only on sharpe but we will still proceed in our work keeping in mind the hints given by this powerful tool.\\
+\input{Part_1/relevant_features}
 
 
+\subsection{An Additional Test}
 
-\subsection*{Switching Model}
-\addcontentsline{toc}{subsection}{Switching Model}
+\input{Part_1/t_test}
+
+\subsection{Switching Model}
+%\addcontentsline{toc}{subsection}{Switching Model}
 
 Here we dwelve into the challenge of finding an optimal subset of all the strategies to put in production for a given week. The model here should just tell us whether a strategy is good or bad for the coming week.\\
 As opposed to a traditional machine learning model, we want something more simple, interpretable and faster. Following the results of our random forest tree classifier we decided to base our models on robust thresholds or ranking of strategies. The reasons for dropping cutting-edge machine learning methods in this context are multiple: first we don't have many samples per strategy to be able to train machine learning models. If we had more data, a Neural Network could for example learn the complex relationships between feature behaviour and future performance of the strategy, but since we have little amounts of data per strategy this could be hardly achievable. It is quite clear that in this context we are aiming at training individually each strategy, as trying to fit many different strategies in one model is definitely not optimal.\\
@@ -343,8 +254,8 @@ We have tested several different models and evaluated them based on the performa
 Each model will require to fit various parameters, therefore we will perform in-sample gridsearches looking for pseudo-optimal parameters trying to avoid overfitting. That means we will look at the results with common sense, if we will find very surprising numbers we will dwelve in the nature of these parameters, and eventually we might not validate the results we see.\\
 
 
-\subsection*{First Tests}
-\addcontentsline{toc}{subsection}{First Tests}
+\subsection{First Tests}
+%\addcontentsline{toc}{subsection}{First Tests}
 
 We run different tests (in our in-sample period) to see which meaningful combination of features could come up with a proper switching model. At first, we tried to base our models only on one feature and it turned out that using only one feature was not enough as the data is really diverse and many strategies have very poor performance. This fact forced us to somehow use a second feature to act as a filter that would wipe out of the full set of strategies a huge majority that had not been performing well in the past. We directed our endeavours towards finding this meaningful filter of strategies. What this filter has to do, is to look at the past performance of any single strategy and set a threshold below which even if the current performance is good this strategy would not be switched on. The reason for this is that many strategies have some very short period where they work well due to specific market conditions that don't last for long. We luckily have a huge wealth of strategies and we can afford being strict in selecting strategies giving more strength to our method. After some tests and discussions we decided that a good filter is given by a long-window rolling-sharpe ratio. This feature looks at the performance of a strategy and computes with a certain rolling window the Sharpe. Then we look at the resulting time series and we require the sharpe to be sufficiently good over a certain window in history. In other words, every Monday the historical x-days sharpe ratio for each strategy is computed and if we are able to find  a period of x-days when a strategy performed sufficiently well in terms of sharpe we believe this is a strategy that can be switched on and off in the future. Evidence will show that this lookback window should be quite long, proving that the strategy has been working for quite a long time in the past (See following parts). Once this filter is applied, the remaining features are switched according to information coming from another feature that we will explore in the following part.\\
 Armed with this tool we started building many different models with all the features we had at hand. Results showed that the Random Forest tree was almost always right in estimating the predictive power of features. In fact, we noticed that portfolios based on features like Exponential Moving Averages and Hit Ratio (features with low predictive power) didn't perform as well as portfolios based on sharpe-ratio. We can see some results below:
@@ -353,79 +264,41 @@ Armed with this tool we started building many different models with all the feat
 
 Moreover, an interesting aspect to analyize is the set of strategies switched by these methods, it seems that they tend to select very similar strategies as the ones switched by the Sharpe-Ratio based portfolios, but with much worse market timing.\\
 
-\subsection*{Method 1: Pure Sharpe}
-\addcontentsline{toc}{subsection}{Method 1: Pure Sharpe}
-
-The first method we try is purely based on the Sharpe Ratio, we simply look for strategies that satisfied a certain requirement in the past and eventually switch them on based on the current Sharpe ratio over a certain window. More in detail, every week we scan the whole universe of strategies and we apply the aforementioned sharpe-filter, pre-selecting only the ones that had a "good enough" performance over a certain window at any point in the past. That means this is a strategy that somehow has proven to be an alpha generator in the past at least. After this pre-selection we put in production only the strategies that currently have a sharpe over a certain window greater than a fixed threshold. For this method to work properly we need to fit four parameters (two thresholds and two windows for the Sharpe Ratio). Even though we might let the optimizer work on an infinite space, we set some boundaries to our search. For example, we will require the sharpe filter to work over a longer period (at least 6 months). While the shorter sharpe that ranks, will be based on a shorter window that will not exceed one trading year.\\
-We run the in-sample grid search and nicely find a smooth surface. This is good news because it confirms that we are not chasing the noise but generating a real signal. 
-
-\todo{METTI QUI GRIDSEARCH}
-
-The results are definitely interesting. Since we don't care about finding exactly the perfect optimal combination of parameters we stick with what we believe makes sense in the optimal area (the lighter one in Figure 1).
-
-\subsection*{Method 2: Ranking Based}
-\addcontentsline{toc}{subsection}{Method 2: Ranking Based}
-
-We will propose an evolution of the basic case that reduces the search space and adds some robustness. The idea is that instead of swithcing strategies on and off based on the Sharpe Ratio being above a certain threshold, we care about ranking the performance of strategies making the assumption that the best ones will still perform well. There are two reasons why this choice makes sense: first of all ranking removes the burden of optimizing some parameters reducing the risk of overfitting. Secondarily, ranking is a much robust statistics than simple threshold, we expect therefore that this method will perform better out of sample. We still have to apply a first filter as for the previous case (fixing the parameters as they have been chosen for method 1), then we will grid-search for an optimal window where strategies are ranked by Sharpe Ratio.\\
-Notice that we also have to set a parameter that is the number of strategies that will be considered best ones after being ranked. The idea here is that this number is given by what the in-company execution system can withstand, that is about 50 strategies per week. More precisely we will select the top 50 strategies (out of 13000!) but only if their sharpe-ratio is still positive in the last period.
-
-\todo{METTI QUI GRIDSEARCH}
-
-BLAH BLAH BLAH\\
-
-
-\subsection*{Method 3: Drawdown Based}
-\addcontentsline{toc}{subsection}{Method 3: Drawdown Based}
-
-In this last method we aim at finding something even more robust. Even though the Random Forest tree suggested that drawdown information is not as relevant as other features when it comes to predict the future performance of strategies, we decided to give a try to this feature as it is really robust and requires almost no parameter.\\
-In detail, the model we try to create here will initially filter as we have seen in the past two cases, but then the remaining strategies will be put in production only if they are somehow recovering from a drawdown. In more mathematical terms, what we did is to compute the PnL line for each strategy and each week we see if the strategy is not more than 2\% below from the last recorded maximum. The underlying idea is that if a strategy is recovering from a drawdown it might be that the underlying mean-reversion between traded assets is again strong. Of course, this simple method has some clear drawbacks like the exposure to spikes and the fact that the drawdown state is measured only once a week. However, the combination between sharpe ratio filter and drawdown information might give some additional alpha information to our portfolio construction so we decided to give it a shot. The results are as follows: 
+\subsection{Method 1: Pure Sharpe}
+\input{Switch_Models/Method_1}
 
 
 
-\section*{Part 2: Risk Allocation}
-\addcontentsline{toc}{section}{Risk Allocation}
+\subsection{Method 2: Ranking Based}
+%\addcontentsline{toc}{subsection}{Method 2: Ranking Based}
+
+\input{Switch_Models/Method_2}
+
+
+\subsection{Method 3: Drawdown Based}
+
+\input{Switch_Models/Method_3}
+
+\section{Part 2: Risk Allocation}
 
 Once we have a robust and trustable switching method, we can move our scope towards risk minimization, or in more precise terms, sharpe ratio maximization. We will build on top of the selected portfolio two different weights systems that will be benchmarked against a simple equally weighted portfolio and a Markowitz-like minimum variance portfolio (see appendix for building details). As it was for the switching problem, our aim is still to find the best out-of-sample portfolio for the following week (setting the new weights on monday) given information up to the previous friday. \\
 
-\subsection*{Method 1}
-\addcontentsline{toc}{subsection}{Method 1}
+\subsection{Model 1}
 
-The first method we try to implement is a Genetic-Leaning portfolio allocator. The method is based on the idea of making the algorithm evolve to find an optimal allocation through extensive genetic mutation. \todo{DESCRITTO DA QUALCUNO, CITA ATRICOLI}.The approach is rather brute-force as it tries to test as many portfolios as possible until the optimal one is found. A more human-like analogy is the following: the algorithm acts as a boss letting many portfolio managers allocate risk according to their views. As time passes the boss will evaluate the portfolio managers based on specific performance measures (that are not only raw pnl) and kicks out the worst performing. At each stage he tries to replace the worst portfolio managers with completely new ones and with a set of managers that trade similarly to the best ons. Let's dig into the underlying methodology: on each monday we face the challenge of assigning weights (between 0 and 1) to the set of tradable strategies. The algorithm is initialized  with a set of random portfolios $\mathbf{w} = (\mathbf{w_1} \dots \mathbf{w_N})$, where each $\mathbf{w_1}$ represents a feasible allocation of risk. The algorithm lets these portfolios trade over a certain window in the past and evaluates their performance. Once all of them have traded, the algorithm ranks them assigning a score given by a so-called \textit{Fitness Function}, which takes many metrics into account to evaluate a portfolio. Then the algorithm kicks out the worst performing, and substitutes them with a new generation (details on this part will be explaine later).\\ The procedure is repeated until an optimum is reached, or in other terms this optimizer is not able to find better portfolios. At this point the final portfolio will be an average of the best found portfolios.\\
-The name Genetic comes from the idea that natural selection and evolution are applied to the set of portfolios. If a portfolio is just bad it will not survive the selection step, while if a portfolio is good it will be challenged with a muted version of itself that might represent an evolutional step. This kind of approach has pros and cons, let's first evaluate the positive aspects:
-\begin{itemize}
-	\item The optimization carried in a way that is able to be conducted in a multidimentional space, in different local minima in parallel  avoiding the risk of missing a global minimum. The mutation happens in a way that optimization is more refined in well performing areas, while it is also randomized to cover the whole space
-	\item The algorithm is conceived in such a way that it serves really well our needs and requirements. Evaluating portfolios with the so called Fitness Function it allows to penalize portfolios that perform well but that give rise to the typical issues of portfolio optimization like instability of weights, poor diversification or meaningless negative weights. The optimization is already done without having to worry about any type of complex mathematical formulation to impose constraints.
-	\item The approach requires very little parameters: the length of the lookback window and the weights to give to any performance measure used to assess portfolio performance.
-	\item The algorithm might fully embrace the non-linearity of the problem and autonomously find relationships between strategies that other methods might not find. 
-\end{itemize}  
-
-On the other hand this method has some drawbacks:
-
-\begin{itemize}
-	\item This brute-force algorithm requires an enormous computing power to span the whole space and rank all the portfolio. Needless to say, we will notice later that the more computing time is given to the algoithm the more the randomness in it is limited and the performance improves. We will dig later in this aspect. \todo{CREA GRAFICO DI PERFORMANCE AL VARIARE DI N}
-	\item As outlined above, there is some randomness, as most of the portfolios that are tested are just randomly generated, so there is little chance to find a precise optimum, but rather something that is quite close to it
-	\item The algorithm looks backward and makes the assumption that the best performing combination in the past will still be the best for the next week.
-	\item Even though there are few parameters to be set, the algorithm is quite sensitive to these values.
-\end{itemize}
-
-\subsubsection*{Implementation}
-\addcontentsline{toc}{subsubsection}{Implementation}
+\input{Genetic_Algo/Genetic_Intro}
 
 
-Let's now address the issue of defining the fitness function, this function that we will indicate with $f_f: \mathbb{R}^N \rightarrow \mathbb{R}$ is a function that given a portfolio vector $\mathbf{w}$ returns a real number as a score. This function is the core of the whole algorithm, because it can evaluate a portfolio based on its performance but also based on how this respects our requirement. For example it might penalize a portfolio that assigns a lot of weight to few strategies, or a portfolio that changes too much compared to what was traded the previous week. Defining this function in the proper way takes more intuition than calculation, and requires to pay attention to a couple of details. Of course, the more complex the fitness function the more our taste can be satisfied, but also the more computational time is required.\\
-We will evaluate the performance of the portfolio based on a mix of sharpe ratio and sortino ratio (achieved over a certain lookback period), somehow taking into account the diversification benefit of a portfolio allocation. We will also take into account how much a portfolio will be different from the previous one with a norm-1 penalty.
-\todo{vedi se - aggiungere altro}
-So our fitness function will look like:\\
+\subsubsection{Implementation}
 
-$$
-f_f = \alpha_1*sharpe(\mathbf{w}) + \alpha_2*sortino(\mathbf{w}) + \alpha_3*||\mathbf{w} - \mathbf{w_{old}}||
-$$
+\input{Genetic_Algo/Implementation}
 
-Where $alpha_1$, $alpha_2$, and $alpha_3$ are weights on which no optimization will be carried to limit the computaional burden. $alpha_1$ and $alpha_3$ will be the same, while $alpha_3$ will be such that the influence on the portfolio is relevan but still not that big to prevent the portfolio form evolving. If a portfolio is really different to the one traded the previous week, requiring a complete rebalancing it has to be good enough to make us switch towards itself. 
-%\todo{Calcola differenza in media $||\mathbf{w} - \mathbf{w_{old}}||$ per vedere come settare a_3}
+\subsubsection{Fitness Function}
 
-\todo{Qui metti tipo di randomizzazione/replacement}\\
-\todo{Metti dettagli per definire l'ottimo}\\
+\input{Genetic_Algo/Fitness_Function}
+
+\subsubsection{Converging towards a global optima}
+
+\input{Genetic_Algo/Convergence}
 
 \section*{Results}
 
