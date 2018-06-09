@@ -1,0 +1,9 @@
+Here comes a crucial part, we want to describe how we will assess the performance of our portfolio. We will aim at maximizing the out-of-sample Sortino Ratio. Let's analyze this statement piece by piece.\\
+First of all the sortino ratio is a performance measure that evaluates how much return does a portfolio give on it's standard deviation on certain days. Given $r_i$ the return on the i-th day, a precise formula is:
+
+$$
+Sortino = \displaystyle \frac{\sum\limits_{i=1}^N r_i}{\sum\limits_{j=1}^N (r_j - \mu)^2} \qquad j \in \mathcal{J}
+$$ 
+
+Where $\mathcal{J}$ is defined as the set of negative returns.\\
+This means that we try to maximize returns without making their standard deviation grow too much. In particular maximizing a signal-to-noise ratio means maximizing the straightness of the PnL line. This is more than just maximizing the PnL because we want to have portfolios that are controllable in bad days and also scalable. The straightest the PnL line, the more we can increase the overall level of risk. The idea of considering the standard deviation only in negative days is related to this fact, we want to control the standard deviation when things go in the wrong direction, avoiding our portfolio to incur in large drawdowns.

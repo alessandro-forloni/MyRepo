@@ -1,0 +1,9 @@
+The title of this section sounds misleading, we just proved that optimal portfolios lie on the efficient frontier, why aren't they optimal then? Well the non-optimality is an issue that arises when we put the context of portfolio optimization in the real world. Some issues arise when a portfolio managers try to optimize the weights relying solely on MPT's formulas. The underlying idea is really interesting, and this theory is still widely accepted as the cornerstone of portfolio optimization.\\
+Let's see why such portfolios are not optimal in the real financial world, we will follow the outline provided in \cite{Critica_Markowitz}:
+
+\begin{itemize}
+	\item Markets change, in-sample and out-of sample are different
+	\item Initially they had an issue of computational complexity that could not be solved, but modern computers can handle the level of computations required easily.
+	\item Estimating the covariance matrix in absence of clean data, or a lot of data (especially if we have few samples and many assets) is a challenge and will be carried on with measurement errors. Nonetheless, Optimal portfolios are computed inverting the covariance matrix, this operation will amplify the degree of imprecision of the algorithm.
+	\item As a result of the previous point, weights are highly unstable as time passes and this is a big issue for real-world large scale portfolios because of the difficulty of continuously rebalancing a big portfolio, but moreover because of the presence of relevant transaction costs. Transaction costs are a real-world friction that can really destry the good performance of an allocation method, even if the optimization has a good outcome, if the portfolio has to be continuously changed, trading fees will eat up most of the generated alpha.
+\end{itemize}

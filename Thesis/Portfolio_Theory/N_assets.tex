@@ -95,4 +95,24 @@ One can prove that the resulting variance of the portfolio is of the form:
 \end{equation}
 
 That is definitely a parabola in the mean return-variance plane. This is called the \textit{Portfolio Frontier} and the upper part of it that has higher return for same variance is referred to as the \textit{Efficient Frontier}.\\
-We tried to obtain this empirically, so what we did is to take 20 random strategies (with decent performance) out of our huge dataset and we numerically optimized to find the portfolio frontier for any level of return. These were the results.
+We tried to obtain this empirically, so what we did is to take 20 random strategies (with decent performance) out of our huge dataset and we numerically optimized to find the portfolio frontier for any level of return. We chose 50 strategies that had a performance that lies in the 75th percentile of the ranked performance of strategies. This was done so that we could easily have portfolios with both positive and negative returns, while allowing us to have a decent equal weight portfolio to benchmark against. Of course our analysis is forward looking in the sense that we computed returns and covariance matrices looking at the whole period. This is done only for pedagogical purposes. Here is the performance of the equally weighted portfolio:
+
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{Portfolio_Theory/Portfolio_Front_Figure_1.png}
+	\captionof{figure}{Equally weighted portfolio of 50 strategies in the 75th percentile in terms of performance}
+	\label{Equal_Weight_frontier}
+\end{center}
+
+
+It's sharpe is about 1.37, nothing special but at least it acts as a decent benchmark. Now let's try to build an efficient frontier from the calculations made before. We obtain the following efficient frontier in the $\sigma^2-\mu$ plan:
+
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{Portfolio_Theory/Portfolio_Front_Figure_2.png}
+	\captionof{figure}{Resulting portfolio frontier}
+	\label{Frontier_frontier}
+\end{center}
+
+First of all we can spot the traditional parabolic shape of the portfolio frontier. The upper part of the portfolio frontier is referred to as the \textit{Portfolio Frontier}. We also highlighted two portfolios: the maximum sharpe ratio portfolio (red marker) and the equally weighted portfolio (green marker). We can clearly see how the equally weighted portfolio is non-optimal, with the same level of return we can substantially reduce our risk by finding a relative efficient allocation. The red spot is an interesing point, this portfolio is the one that achieves the maximum sharpe ratio, or in other words it provides the best tradeoff between risk and return. This portfolio can be obtained by analytical derivations, but in this case we just looked into the set of portfolios that we generated. In our project we will try to achieve this portfolio out-of-sample.\\
+One important remark should be made before we move on: we will not be able to achieve the same level of optimality as we will not have the luxury of forecasting returns and variances.

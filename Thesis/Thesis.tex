@@ -84,7 +84,7 @@
 
 %\interfootnotelinepenalty=10000
 \begin{titlepage}
-	\vspace{50mm}
+	\vspace{20mm}
 	\begin{center}
 		\includegraphics[width=5cm]{Figures/EPFL_LOG.pdf}\\
 		\vspace{2cm}
@@ -95,7 +95,7 @@
 		{\large{\bf Master Project}}\\
 		\vspace{19mm} {\large{\bf In cooperation with NAFORA SA}}
 	\end{center}
-	\vspace{40mm}
+	\vspace{20mm}
 	\par
 	\noindent
 	%\begin{center}
@@ -108,7 +108,7 @@
 				}}
 	%\end{center}
 	
-	\vspace{10mm}
+	\vspace{5mm}
 	\begin{center}
 		{\large{\bf Academic Year\\
 				2017/2018 }}
@@ -212,12 +212,21 @@ We can observe that for the majority of the cases the normality hypothesis is re
 \input{Portfolio_Theory/N_assets}
 
 
+\subsection{Why aren't Markowitz portfolios optimal?}
+
+\input{Portfolio_Theory/non_optimality}
+
+
 \subsection{The risk-free asset}
+
+\input{Portfolio_Theory/risk_free}
 
 
 \subsection{Performance Metrics}
 
-\subsection{Why aren't minimum variance portfolios optimal?}
+\input{Portfolio_Theory/performance_metrics}
+
+
 
 
 \section{Part 1: Strategy Selection}
@@ -283,7 +292,7 @@ Moreover, an interesting aspect to analyize is the set of strategies switched by
 
 Once we have a robust and trustable switching method, we can move our scope towards risk minimization, or in more precise terms, sharpe ratio maximization. We will build on top of the selected portfolio two different weights systems that will be benchmarked against a simple equally weighted portfolio and a Markowitz-like minimum variance portfolio (see appendix for building details). As it was for the switching problem, our aim is still to find the best out-of-sample portfolio for the following week (setting the new weights on monday) given information up to the previous friday. \\
 
-\subsection{Model 1}
+\subsection{Model 1 - A Genetic Learner}
 
 \input{Genetic_Algo/Genetic_Intro}
 
@@ -299,6 +308,16 @@ Once we have a robust and trustable switching method, we can move our scope towa
 \subsubsection{Converging towards a global optima}
 
 \input{Genetic_Algo/Convergence}
+
+\subsection{Model 2 - An enhanced risk-parity}
+
+\input{HRP/Intro}
+
+\subsubsection{Clustering the strategies with affinity propagation}
+
+\subsubsection{Allocating risk}
+
+
 
 \section*{Results}
 

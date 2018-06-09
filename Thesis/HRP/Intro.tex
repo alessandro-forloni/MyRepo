@@ -1,0 +1,11 @@
+Here we propose an alternative model, here we look for something more controllable, interpretable and less computationally heavy. The idea is to oppose the genetic learner with something particularly different.\\
+If we look at the drawbacks of Genetic Portfolios described in section 4.1, we will be able to overcome them here. In fact, the computational power required is much lower, the solution is exact in the sense that there is no randomness here but moreover there are very few parameters in the algorithm, and the dependency on these parameters is not that relevant.\\
+Let's dig a bit in how this portfolio is going to be built. As an alternative to the genetic portfolio, we will start from the same point, that is a given allocation of strategies for a given week. We will try to achieve a minimum variance approach, of course for all the reasons outlined above we will not try to use directly a Markowitz approach (even though this will be considered as a benchmark). Given an allocation we will try to minimize the risk by looking for similar strategies and penalizing their weight in production to avoid having a portfolio that has an excessive exposure to a certain sector/region/asset-class. This should ideally give a well-diversified portfolio. We will at last look at the sharpe ratio to tilt the weight towards better performing strategies.\\
+More in detail our approach will be:
+
+\begin{itemize}
+	\item Get the strategies in production, look at their PnL history and reduce them with a PCA to $n_dim$ dimensions.
+	\item Use this reduced data to cluster the strategies based on their PnL. In this way we avoid the use of correlation that is tricky and numerical error-prone. The algorithm that will be used to perform this clustering is detailed in the next section. The good thing about this algorithm is that we don't need to set a parameter for the number of clusters to create.
+	\item Apply equal weights to each cluster, that means that if there is a big cluster of many similar strategies, these will be put with a low weight to keep the portfolio diverisified.
+	\item Tilt the weights based on the sharpe ratio.
+\end{itemize}
