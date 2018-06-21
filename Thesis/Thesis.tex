@@ -197,6 +197,13 @@ We can observe that for the majority of the cases the normality hypothesis is re
 \todo{AGGIUNGI STYLIZED FACTS PER CONFRONTARE CON RITORNI SOLITI}
 \todo{AGGIUNGIGRAFICO AUTOCORRELATION STRATEGIE}
 
+\subsection{Data Cleaning}
+
+Before moving to implement any kind of model we need to make sure the data is clean and usable.\\
+We first noticed that many strategies traded very rarely filling the data only with NaNs (Not a number), we removed these strategies from the data. A lot of daily PnLs were filled with zeros, in 90\% of the cases this happens on sundays and Saturdays. In such cases not all the strategies are not trading, so what we did was to bring the weekend PnL back to Friday and accumulate it there. This is possible since strategies are trading at weekends for very little amounts of time. At this point we could drop the entire weekends, the remaining 10\% of missing data was due to holidays or data actually missing, so we kept NaNs instead of the zeros values to keep the distribution on the trading days unchanged.\\  
+Secondarily, the data comprises many different strategies backtested with different levels of risk, to ba able to compare them we need to scale their PnLs by their standard deviations.\\
+At last we took the decision to drop some strategies, like the ones trading the Swiss franc, as it is known on the 2nd of February 2015 the Swiss frank soared in few minutes against any currency as soon as the Swiss National Bank removed the peg it had against the developed currencies. This resulted in a huge drawdowns or gains for many strategies depending on the position they had in the Swiss currency at the moment of the removal of the peg. We decide to remove these strategies as the event was completely unpredictable and no sharpe ratio or feature-based rule could make a strategy stop from trading in that case. We don't want to bias our results towards strategies that accidentally were long the Swiss franc on that moment, but we also don't want to penalize a strategy just because it was trading on a short position the Swiss Currency. At the cost of reducing out dataset (removing roughly 20 strategies) we have a more usable and reliable dataset.
+
 \section{Classic Portfolio Theory}
 
 \subsection{Risk and Return}
@@ -287,6 +294,10 @@ Moreover, an interesting aspect to analyize is the set of strategies switched by
 \subsection{Method 3: Drawdown Based}
 
 \input{Switch_Models/Method_3}
+
+\subsection{Method 4: Regression}
+
+\input{Switch_Models/Method_4}
 
 \section{Part 2: Risk Allocation}
 
