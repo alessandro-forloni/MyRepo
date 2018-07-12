@@ -1,4 +1,4 @@
-We want to check that the results coming from the Random Forest tree are actually meaningful. To this end, we will observe the problem from a slightly different angle. We want to verify whether the feature that is supposedly the best will actually have some predictive power for our portfolio.\\
+We want to check that the results coming from the Random Forest tree are actually meaningful. We specifically want to verify that the Sharpe ratio is not only just a better measure compared to a pool of features, but we want to ensure that Sharpe has significance at an absolute level. To this end, we will observe the problem from a slightly different angle. We want to verify whether the feature that is supposedly the best will actually have some predictive power for our portfolio.\\
 To this end we will run a simple regression where we will try to predict the future one-week return of a strategy given one feature (the best one that is a rolling sharpe over a window of 350 trading days), in our case we will try to fit:
 
 \begin{equation} \label{regression}
@@ -7,6 +7,14 @@ r_i = \beta SR\_350_i + \epsilon_i \qquad i=1\dots N
 
 Where N is the number of traded strategies. The regression is run on the whole in-sample period. We will evaluate the performance of the feature by looking at the $R^2$ score and the individual t-statistic.
 
-\todo{QUI IMMAGINOZZA DEL TEST}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Part_1/histograms.png}
+	\caption{Empirical distribution of R-squared and t-statistics}
+	\label{histograms}
+\end{figure}
 
-Remember that to accept the the alternative hypothesis of the feature being relevant at a 95\% level we need to have the t-statistic to be greater than 1.65. 
+Remember that to accept the the alternative hypothesis of the feature being relevant at a 95\% level we need to have the t-statistic to be greater than 1.65.\\
+We can clearly see how many strategies don't acknowledge the sharpe as a meaningful feature to predict future performance. In our case, there are also many strategies where this feature is definitely relevant. To add some significance to the chart, we report some numbers: 
+roughly 10\% of the strategies have an r-squared that is greater than 10\%. On the other hand 37\% of all the strategies find the sharpe ratio as a relevant feature when the null hypothesis of non significance is tested against the alternative hypothesis of significance at a 95\% level.\\
+This is a key piece of information, in fact we have a confirmation of the importance of this feature, but we also know that this doesn't apply to all the strategy, it cannot be elevated to the status of a "generic feature" that spots momentum on any strategy. 
