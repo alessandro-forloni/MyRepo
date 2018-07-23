@@ -11,7 +11,13 @@ Now let's address the issue of how to reach a global optima. The algorithm has i
 
 This procedure will hopefully bring to an optimal portfolio. We need to decide how to define an optimal point, or in other words establish when should the optimization terminate. There are many different ways to establish a termination condition, common ones are to stop once a certain performance criteria is reached (i.e a minimum Sharpe Ratio), or to stop the optimization after a fixed amount of time/iterations. Our procedure will be a bit more complex, we will let the evolutionary process continue until a minimum number of iterations will have been done and the improvement in the top portfolios is not that relevant so that it is worth carrying the optimization on. We can see in the following chart a snapshot of an optimization procedure, as we increase the number of iterations the best elements improve their performance until they reach a level where increasing the number of iterations doesn't bring any value to the portfolio.\\
 
-\todo{Chart dell'evoluzione di f\_record}
+\begin{center}
+	\centering
+	\includegraphics[width=0.6\textwidth]{Genetic_Algo/Fitness_function.png}
+	\captionof{figure}{Improvements of portfolio iteration after iteration.}
+	\label{Fitness_func}
+\end{center}
+
 
 We now aim to show how this optimization process works in an intuitive and visual way. We consider the optimization process for one date and show the evolution of the various generations of portfolios. We use a nice heatmap where every colour indicates a different "species". At each iteration the species are sorted by score and it is easy to see how as the optimization process goes on some species become dominant and mark the evolution of most of the portfolios.
 

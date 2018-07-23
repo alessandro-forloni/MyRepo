@@ -1,0 +1,29 @@
+Here we want to detail the algorithm behind the Affinity Propagation Clustering. This algorithm has a particular way of reaching an optimal grouping of samples and we think is worth explaining it also to understand in depth the reasons why we opted for it.\\
+First of all, we need to specify that, as the name suggests, this algorithm clusters by using "similarity" information. It iterates updating two matrices until these don't change significantly. The input is a similarity matrix, that is measured as the negative euclidean distance between two points:
+
+\begin{equation} \label{similarity_matrix}
+s(i,j) = - \left \lVert x_i - x_j \right \rVert ^ 2
+\end{equation}
+
+The diagonals are usually non-zero, because they are initialized as the median of all distances.\\
+The higher the similarity value the "closer" the points are expected to be and therefore the higher the likelihood of finding them in the same cluster in the end.\\
+Given this as an input the algorithm updates at each iteration two matrices the \textit{Responsibility Matrix} and the \textit{Availability Matrix}. The first gives for each pair (i,j) that measure how much $x_j$ could be suitable as an element of the cluster where $x_i$ lies, compared to all other $x_{j_s}$ that could potentially enter that cluster. The second matrix ($\mathbf{A}$) measures how much it is convenient for $x_i$ to pick $x_j$ as a companion compared with all other candidates. Initially both matrices are initialized as zeroes.\\
+At each iteration the value of these matrices are updated:
+\begin{itemize}
+	\item get the set of points and their similarities. Also allocate $\mathbf{R}$ and $\mathbf{A}$.
+	\item update the responsibilities: $r(i,j) = s(i,j) - max_{l \neq j}\left(a(i,l) + s(i,l)\right)$ that means that the responsibility is merely the similarity between two points minus the largest competing similarity among all the other competing points. In fact the higher the availability between two other points, the lower the score for the current responsibility. This causes to drop this point from the competition to enter a certain cluster if "not similar enough" compared to the competition.\\
+	\item That availabilities are updated, out of the diagonal as\\
+	$a(i,j) = min \left(0, r(j,j) + \sum_{l \neq i,j}max(0, r(l,j))\right)$\\ 
+	and on the diagonal as $a(i,i) = \sum_{l \neq i}max(0, r(l,i))$.\\
+	This means that if $x_j$ is really suitable for $x_i$ only and not for other points, $a(i,j) = r(j,j)$ on the other hand, if $x_j$ is really suitable for $x_i$ and also other points this value will be higher. Only the positive responsibilities are taken into account here, because we care that a point $x_i$ can explain well few other points, we don't care how well it explains other points that might be not similar.
+	\item repeat until the update on the matrices in negligible.
+\end{itemize}
+
+Once the matrices are computed the cluster assignments are done by assigning to each point $x_i$ the cluster $k$ that maximizes the responsibility and availability:
+
+\begin{equation} \label{similarity_matrix}
+cluster_i = argmax_{k} \left[a(i,k)+r(i,k)	\right]
+\end{equation}
+
+There are some drawbacks to this method, first of all it is not really simple and interpretable and also has quite a significant computational cost. Secondarily, it is still exposed to the definition of $s(i,j)$, in the sense that the values that this matrix has (especially on its diagonal elements) can strongly influence the result.\\
+On the other hand, the algorithm is quite robust and autonomously finds the best number of clusters by understanding the structure of the data.

@@ -66,6 +66,15 @@
 %\pagenumbering{gobble}
 \numberwithin{equation}{subsection}
 
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{\nouppercase{\rightmark}}
+%\rfoot{\thepage}
+
+
 \begin{document}
 
 \newcommand*\xbar[1]{%
@@ -158,42 +167,19 @@ For what concerns assigning the weights we developed two different approaches, o
 \subsection{The data}
 %\addcontentsline{toc}{subsection}{The Data}
 
-As mentioned before the dataset at hand consists of 13000 simulated strategies, based on mean-reversion. All these strategies are trading one futures against another one looking for relative mispricings. This number of strategies comes out of a simulation of almost all possible trading pairs among roughly 150 futures traded worldwide. The huge diversity among these strategies makes it hard to find a unique model to allocate risk among all of them. Diversification has to be applied not only to asset classes, but also taking into account type of algorithms, trading latency and underlying country or region of exposure.\\
-The data spans through almost six years, from January 2012 to August 2017. To perform the studies, the final year has been dropped to be used as a final validation set (also referred to as production set). The first remaining chunk has been divided into train and test set.\\
-We also decided to remove any strategy involved in Swiss franc trading, to avoid our results to be biased by the famous drop that happened on the 15th of January 2015. We don't want to penalize or advantage any strategy that happened to be trading the Swiss Franc in either long or short side in that day because we believe that was a statistically unpredictable event. There is no guarantee that such an event could be forecasted only with information coming from strategy performance.\\
+\input{Data/Data_1}
+
 
 \subsection{Some Descriptive Statistics}
 %\addcontentsline{toc}{subsubsection}{Some Descriptive Statistics}
 
-Here we want to give a taste of what our data looks like. We first run a code that computes sample statistics for all the strategies. The results are exposed in Table 1. 
+\input{Data/Data_2}
 
-\begin{table}
-	\centering
-	\begin{tabular}{c|c|c|c|c|c}
-		Statistic   & Mean & Median & Min & Max & IQR \\\hline
-		Mean Return & -0.0002 & -0.0002 & -0.0032 & 0.0024 & 0.0002 \\ 
-		Skew        & -1.9393 & -1.698 & -34.2374 & 21.119 & 2.5754 \\ 
-		Kurtosis    & 56.9226 & 25.5496 & -5.4507 & 1202.95 & 37.851 \\ 
-		Sharpe Ratio& -1.3653 & -1.1725 & -20.0072 & 15.547 & 1.4080 \\ 
-		Sortino     &-1.3514 & -1.1808 & -32.9069 & 40.322 & 1.3692 \\ 
-	\end{tabular}
-	\caption{\label{tab:widgets} Global strategy statistics.}
-\end{table}
-
-We can see how on average the mean return per strategy is negative. The Sharpe-ratio of course follows this pattern as well. On the other hand we notice how some sharpes are very high (e have peaks at around 15 on the whole history!). Here an important remark must be made, many strategies with good performance seem really appealing, but for several reasons might not be tradable due to liquidity issues, regulation or asynchronization of quotes being streamed from different locations in the planet.\\
-Back to our statistical analysis, we notice how the skew and kurtosis reach extreme values, highlighting that the returns of these strategies might not be normally distributed. To this end we conducted a Shapiro-Wilks normality test for each strategy, where the null Hypothesis of normality is challenged (for details on this procedure refer to the Appendix). The results are the following:
-
-We can observe that for the majority of the cases the normality hypothesis is rejected. Some strategies survive the test, but a deeper analysis supports the idea that this is caused by a lack of data for these strategies. 
-
-\todo{Add comparison with traditional stylized facts}
-\todo{Add autocorrelation chart}
 
 \subsection{Data Cleaning}
 
-Before moving towards the implementation of any kind of model, we need to make sure the data is clean and usable.\\
-We first noticed that many strategies traded very rarely filling the data only with NaNs (Not a number), we removed these strategies from the data. A lot of daily PnLs were filled with zeros, in 90\% of the cases this happens on sundays and Saturdays. In such cases not all the strategies are not trading, so what we did was to bring the PnL produced at weekends back to Friday and accumulate it there. This is possible since strategies are trading at weekends for very little amounts of time. At this point we could drop the entire weekends, the remaining 10\% of missing data was due to holidays or data actually missing, so we kept NaNs instead of the zeros values to keep the distribution on the trading days unchanged.\\  
-Secondarily, the data comprises many different strategies backtested with different levels of risk, to be able to compare them we need to scale their PnLs by their standard deviations in a rolling fashion.\\
-At last we took the decision to drop some strategies, like the ones trading the Swiss franc, as it is known on the 2nd of February 2015 the Swiss frank soared in few minutes against any currency as soon as the Swiss National Bank removed the peg it had against the developed currencies. This resulted in huge drawdowns or gains for many strategies depending on the position they had in the Swiss currency at the moment of the removal of the peg. We decide to remove these strategies as the event was completely unpredictable and no Sharpe-ratio or feature-based rule could make a strategy stop from trading in that case. We don't want to bias our results towards strategies that accidentally were long the Swiss franc on that moment, but we also don't want to penalize a strategy just because it was trading on a short position the Swiss Currency. At the cost of reducing out dataset (removing roughly 20 strategies) we have a more usable and reliable dataset.
+\input{Data/Data_3}
+
 
 \section{Classic Portfolio Theory}
 
@@ -265,9 +251,7 @@ Each model will require to fit various parameters, therefore we will perform in-
 %\addcontentsline{toc}{subsection}{First Tests}
 
 We run different tests (in our in-sample period) to see which meaningful combination of features could come up with a proper switching model. At first, we tried to base our models only on one feature and it turned out that using only one feature was not enough as the data is really diverse and many strategies have very poor performance. This fact forced us to somehow use a second feature to act as a filter that would wipe out of the full set of strategies a huge majority that had not been performing well in the past. We directed our endeavours towards finding this meaningful filter of strategies. What this filter has to do, is to look at the past performance of any single strategy and set a threshold below which even if the current performance is good this strategy would not be switched on. The reason for this is that many strategies have some very short period where they work well due to specific market conditions that don't last for long. We luckily have a huge wealth of strategies and we can afford being strict in selecting strategies giving more strength to our method. After some tests and discussions we decided that a good filter is given by a long-window rolling-sharpe ratio. This feature looks at the performance of a strategy and computes with a certain rolling window the Sharpe. Then we look at the resulting time series and we require the sharpe to be sufficiently good over a certain window in history. In other words, every Monday the historical x-days sharpe ratio for each strategy is computed and if we are able to find  a period of x-days when a strategy performed sufficiently well in terms of sharpe we believe this is a strategy that can be switched on and off in the future. Evidence will show that this lookback window should be quite long, proving that the strategy has been working for quite a long time in the past (See following parts). Once this filter is applied, the remaining features are switched according to information coming from another feature that we will explore in the following part.\\
-Armed with this tool we started building many different models with all the features we had at hand. Results showed that the Random Forest tree was almost always right in estimating the predictive power of features. In fact, we noticed that portfolios based on features like Exponential Moving Averages and Hit Ratio (features with low predictive power) didn't perform as well as portfolios based on sharpe-ratio. We can see some results below:
-
-\todo{METTI GRIDSEARCH CAGOSA}
+Armed with this tool we started building many different models with all the features we had at hand. Results showed that the Random Forest tree was almost always right in estimating the predictive power of features. In fact, we noticed that portfolios based on features like Exponential Moving Averages and Hit Ratio (features with low predictive power) didn't perform as well as portfolios based on Sharpe-ratio.
 
 Moreover, an interesting aspect to analyize is the set of strategies switched by these methods, it seems that they tend to select very similar strategies as the ones switched by the Sharpe-Ratio based portfolios, but with much worse market timing.\\
 
@@ -294,9 +278,16 @@ Moreover, an interesting aspect to analyize is the set of strategies switched by
 
 \input{Switch_Models/Method_5}
 
+\subsection{Results}
+
+\input{Switch_Models/Results}
+
+\newpage
+
 \section{Part 2: Risk Allocation}
 
-Once we have a robust and trustable switching method, we can move our scope towards risk minimization, or in more precise terms, sharpe ratio maximization. We will build on top of the selected portfolio two different weights systems that will be benchmarked against a simple equally weighted portfolio and a Markowitz-like minimum variance portfolio (see appendix for building details). As it was for the switching problem, our aim is still to find the best out-of-sample portfolio for the following week (setting the new weights on monday) given information up to the previous Friday. We want to allocate risk to the set of strategies that we know can perform well in a way that we exploit relationships between assets to achieve a high level of diversification.\\
+Once we have a robust and trustworthy selection method, we can move our scope towards risk minimization, or in more precise terms, Sharpe-Ratio maximization. We will build on top of the selected portfolio two different weights systems that will be benchmarked against a simple equally weighted portfolio and a Markowitz-like minimum variance portfolio (see appendix for building details). As it was for the switching problem, our aim is still to find the best out-of-sample portfolio for the following week (setting the new weights on Monday) given information up to the previous Friday. We want to allocate risk to the set of strategies that we know can perform well in a way that we exploit relationships between assets to achieve a high level of diversification.\\
+The methods will be compared for how they will perform in the out-of-sample dataset. The In-sample dataset will be used for optimization if required.\\ 
 
 \subsection{Model 1 - A Genetic Learner}
 
@@ -325,6 +316,8 @@ Once we have a robust and trustable switching method, we can move our scope towa
 
 
 \subsubsection{The Affinity Propagation Algorithm}
+
+\input{HRP/Affinity_Propagation}
 
 \subsubsection{Allocating risk}
 
