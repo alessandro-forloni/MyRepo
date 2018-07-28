@@ -1,0 +1,20 @@
+As outlined before, the decision trees are an all-purpose machine learning algorithm able to be trained on extremely non-linear phenomena. The beauty of these algorithm lies in the simplicity of the underlying learning process, the data is split in "sectors" in a way that the highest "purity" is achieved. The Random forest algorithm adds robustness to this process. Let's first explore in detail the training process for a simple decision tree.\\
+
+\begin{itemize}
+	\item  Given an m-dimensional set of data with an output feature (we are in the case of supervised learning) examine all the possible splits on one feature.
+	\item Evaluate each split based on the purity of the splitted areas. This is done trough the \textit{Gini} impurity measure: $I_G = \sum\limits_{i=1}^N p_i(1-p_1)$, where $N$ is the number of labels/classes in the data.\\
+	Ths measure indicates how often a randomly chosen element from the set would be incorrectly labeled if it was randomly labeled according to the distribution of labels in the subset. This comes clear with the fact that the tree assigns probability to labels.
+	\item The purest split gives rise to a new node.
+	\item From this split others are generated until the highest purity or the maximum number of splits is achieved.\\
+\end{itemize}
+
+As it might emerge from this brief explanation, decision trees tend to overfit the data, as they learn very complex non linear-features. This behaviour is described in the context of the bias-variance trade-off where decision trees stand more in favor of variance rather than bias. Random forest try to overcome this issue by averaging many trees.\\
+Once we understood how a general decision tree is trained we can explore in depth the training of a random forest algorithm:
+
+\begin{itemize}
+	\item Generate M different trees.
+	\item Each tree is trained (as a normal decision tree) on a random subset of the features. This number is usually believed to be a fraction $\sqrt{n}/n$ where $n$ is the number of features.
+	\item The results from all the trees are averaged, that means that for each point the final label will be given by the average of all labels given by the different M trees. 
+\end{itemize}
+
+This robust procedure is useful to train powerful regressors or classifiers, but might be used as well to measure the forecasting ability of the input features. If a feature has real predictive power, it will be used in many bootstrapped samples to produce splits in the data, therefore being used many times. Computing the number of times each feature is used to produce a split will give a ranking of feature importances.\\

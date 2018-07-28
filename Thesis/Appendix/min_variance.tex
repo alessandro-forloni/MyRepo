@@ -1,0 +1,45 @@
+Here we build the foundations of the Minimum Variance portfolio used as a benchmark to measure the relative performance of our weight assignment methods.\\
+Firstly, we set the problem in rigorous terms: given a set of N tradable instruments (in our case trading strategies) we want to find the optimal trading vector $\mathbf{w} = (\mathbf{w_1} \dots \mathbf{w_N})$ that represents the composition of our portfolio. This composition will optimally be the one that minimizes the in-sample variance of the portfolio. The latter is measured as:
+
+$$
+\sigma^2_\pi = \frac{1}{2} \mathbf{w}^T\mathbf{\Sigma} \mathbf{w}
+$$
+
+This optimization problem is usually solved under the constraint that the sum of the weights should be equal to one. We will solve the problem and then impose that the weights are also positive (it wouldn't make sense to trade strtegies with negative weights).\\
+The lagrangean to solve to minimize the variance is the following:
+
+$$
+\mathbf{L} = \frac{1}{2} \mathbf{w}^T\mathbf{\Sigma} \mathbf{w} - \lambda\left(\mathbf{1}^T\mathbf{w} - 1\right)
+$$
+
+Where $\mathbf{1}$ is a vector made up of ones.\\
+We compute the first order conditions:
+
+$$
+\frac{\partial \mathbf{L}}{\partial \mathbf{w}} = \mathbf{\Sigma} \mathbf{w} - \lambda\mathbf{1} = 0 \qquad  \frac{\partial \mathbf{L}}{\partial \lambda} = \mathbf{1}^T\mathbf{w} - 1 = 0
+$$
+
+From the first F.O.C. we immediately find:
+
+$$
+\mathbf{w} = \lambda \mathbf{\Sigma}^{-1} \mathbf{1}
+$$
+
+We plug this result into the other F.O.C.:
+
+$$
+\lambda \mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1} - 1 = 0 \Longrightarrow \lambda = \frac{1}{\mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1}}
+$$
+
+Therefore getting a nice analytical closed-form solution for our minimum variance portfolio:
+
+$$
+\mathbf{w} = \frac{\mathbf{\Sigma}^{-1} \mathbf{1}}{\mathbf{1}^T \mathbf{\Sigma}^{-1} \mathbf{1}}
+$$
+
+The beauty of this formula comes with some drawbacks:
+\begin{itemize}
+	\item $\mathbf{\Sigma}$ is often not precisely estimated due to the huge number of strategies and the little amount of samples to use to measure standard deviations and correlations. Moreover this matrix is not to invert leading to numerical errors. To partially address these issues we use a \textit{LedoitWolf} covariance matrix whose construction is explained in the next chapter.
+	\item This approach completely ignores transaction costs, leading to a fastly changing and unstable portfolio composition
+	\item The model works making a basic assumption: in-sample correlations and variances will hold out-of-sample with very simila values. Unfortunately this is rarely the case in the real world, making this portfolio sub-optimal in terms of variance.
+\end{itemize}

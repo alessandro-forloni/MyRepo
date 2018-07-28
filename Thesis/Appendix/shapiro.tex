@@ -1,0 +1,14 @@
+As suggested by the name, the Shapiro-Wilks test checks if a sample is drawn from a normal distribution. More precisely, given a sample it tests $H_0$ (normality) versus the alternative hypothesis of non-normality. This test is ideal for our case as it doesn't require too much data to come to a conclusion. The test is non parametric and starts with sorting the data. Once the data is sorted, the test statistic can be computed:
+
+$$
+\displaystyle W = \frac{\left(\sum\limits_{i=1}^N a_{i}x_{(i)}\right)^2}{\sum\limits_{i=1}^N(x_i-\bar{x})^2}
+$$
+
+Each element has its specific meaning:
+\begin{itemize}
+	\item $\bar{x}$ is the sample mean of the data.
+	\item $x_{(i)}$ is the $i$-th order statistic. 
+	\item $a_i$ are tabulated coefficients coming out of the distribution of order statistics of a normal standard distribution.
+\end{itemize}
+
+The larger the statistic the more "normal" the data. This comes from the idea that the test wants to measure the similatity of the ordered statistics to those of a standard normal distribution. The W statistic somehow measures the closedness of these two entities.

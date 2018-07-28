@@ -1,0 +1,22 @@
+Here we want to give a taste of what our data looks like (only for the in-sample dataset). We first run a code that computes sample statistics for all the strategies. The results are exposed in Table 1. 
+
+\begin{table}
+	\centering
+	\begin{tabular}{c|c|c|c|c|c}
+		Statistic   & Mean & Median & Min & Max & IQR \\\hline
+		Mean Return & -0.0002 & -0.0002 & -0.0032 & 0.0024 & 0.0002 \\ 
+		Skew        & -1.9393 & -1.698 & -34.2374 & 21.119 & 2.5754 \\ 
+		Kurtosis    & 56.9226 & 25.5496 & -5.4507 & 1202.95 & 37.851 \\ 
+		Sharpe Ratio& -1.3653 & -1.1725 & -20.0072 & 15.547 & 1.4080 \\ 
+		Sortino     &-1.3514 & -1.1808 & -32.9069 & 40.322 & 1.3692 \\ 
+	\end{tabular}
+	\caption{\label{tab:widgets} Global strategy statistics.}
+\end{table}
+
+We can see how on average the mean return per strategy is negative. The Sharpe-ratio of course follows this pattern as well. On the other hand we notice how some sharpes are very high (e have peaks at around 15 on the whole history!). Here an important remark must be made, many strategies with good performance seem really appealing, but for several reasons might not be tradable due to liquidity issues, regulation or asynchronization of quotes being streamed from different locations in the planet.\\
+Back to our statistical analysis, we notice how the skew and kurtosis reach extreme values, highlighting that the returns of these strategies might not be normally distributed. To this end we conducted a Shapiro-Wilks normality test for each strategy, where the null Hypothesis of normality is challenged (for details on this procedure refer to the Appendix). The results are the following:
+
+We can observe that for the majority of the cases the normality hypothesis is rejected. Some strategies survive the test, but a deeper analysis supports the idea that this is caused by a lack of data for these strategies. 
+
+\todo{Add comparison with traditional stylized facts}
+\todo{Add autocorrelation chart}
