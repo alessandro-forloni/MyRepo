@@ -13,12 +13,12 @@ To be able to predict the performance of trading strategies we first need to bui
 		
 	Where $med$ stands for median and $IQR$ stands for interquantile range. Hopefully this feature should allow to ignore the non-normality of the distribution of returns and give a robust measure of performance.\\
 	
-	\item \textit{Exponetially Weighted Sharpe Ratio:}. This feature is an evolution of the simple sharpe ratio. It is computed as a roolling mean divided by a rolling standard deviation, calculated with exponential weighting. The rational between this choice is that an exponential sharpe should be able to capture faster changes in the evaluation of a performance of a strategy.\\
+	\item \textit{Exponentially Weighted Sharpe Ratio:}. This feature is an evolution of the simple Sharpe-ratio. It is computed as a rolling mean divided by a rolling standard deviation, calculated with exponential weighting. The rational between this choice is that an exponential sharpe should be able to capture faster changes in the evaluation of a performance of a strategy.\\
 	
 	  
 	\item \textit{Performance Quantile:} This feature looks on a rolling window at the performance over a certain horizon. This past performance is averaged at a daily level and compared with the distribution of past returns. The are some interesting dynamics that this fature should capture. For example if a strategy that has been trading with very good performance over the last years suddenly stops being profitable, this feature will immediately advise to switch the strategy off. On the contrary, a strategy that has been performing poorly suddently records some good performance, resulting in a high position in the historical distribution and some risk being allocated in production.\\   
 
-	\item \textit{Exponential Moving Average of PnL:} this feature is computed as the moving average over a certain period of the cumulative pnl line of a strategy weighted over history with exponential weighting. Given a time period $T$, a weight factor is computed as $k = \frac{2}{T+1}$ and the exponential moving average is computed as\\
+	\item \textit{Exponential Moving Average of PnL:} this feature is computed as the moving average over a certain period of the cumulative PnL line of a strategy weighted over history with exponential weighting. Given a time period $T$, a weight factor is computed as $k = \frac{2}{T+1}$ and the exponential moving average is computed as\\
 	
 	\begin{center} 
 		$\displaystyle EMA[i] =  \left(pnl\_curve[i] - EMA[i-1]\right)k + EMA[i-1]$
@@ -30,6 +30,6 @@ To be able to predict the performance of trading strategies we first need to bui
 	
 	\item \textit{Sortino Ratio:} Computed as the Sharpe ratio, but considering only the volatility of negative returns.\\ 
 	
-	\item \textit{Drawdown Mode:} This simple feature indicates whether a strategy is in drawdown or not. In other words it looks at the cumulative PnL of a given strategy and trades it when the current cumulative PnL is above the rolling max. More precisely, to give a bit more freedom in switching we allow the strategy to loose 2\% from the previous max before being switched off, to eliminate the effect of noise.\\
+	\item \textit{Average Drawdown:} This simple feature indicates how much time over a certain window the strategy has been in drawdown. In other words it looks at the cumulative PnL of a given strategy and computes the number of drawdown days dividing it by the total length of the rolling window. This feature works at best with short windows that penalize less long drawdowns.\\
 	 
 \end{itemize}

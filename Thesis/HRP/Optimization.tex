@@ -1,11 +1,11 @@
-We need to tweak our model to make it perform at best. The PCA part was dealth with in a previous point and we found the optimal number of output dimensions to be around 80.\\
+We need to tweak our model to make it perform at best. The PCA part was handled in a previous point and we found the optimal number of output dimensions to be around 80.\\
 What is missing now is the backward-looking window for the Sharpe-Ratio used to rank strategies based on their performance. As mentioned before we will test the model in-sample with many different windows (short term ones ranging from 20 rading days up to 120 trading days).\\
 The output is simply given by an analysis of performance in terms of Sharpe-Ratio and Sortino-Ratio for each window. A simple outlook is given by the following chart:
 
 \begin{center}
 	\centering
 	\includegraphics[width=0.7\textwidth]{HRP/CRP_Optimization.png}
-	\captionof{figure}{GridSearch for the backward-looking period in the CRP method}
+	\captionof{figure}{Optimization for the backward-looking period in the CRP method}
 	\label{CRP_Optimization}
 \end{center}
 

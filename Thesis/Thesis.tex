@@ -10,6 +10,9 @@
 %collegamenti ipertestuali
 \usepackage{hyperref}
 
+% Boxes algoritmi
+\usepackage{algorithm,algorithmic}
+
 %tabelle
 \usepackage{booktabs}
 \usepackage{caption}
@@ -21,6 +24,8 @@
 %matematica
 \usepackage{mathtools}
 \usepackage{amsmath}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 %stile di pagine
 \pagestyle{plain} %headings?
@@ -132,12 +137,14 @@
 \section*{Acnkowledgments}
 %\addcontentsline{toc}{section}{Acnowledgments}
 
+\todo{STILL TO BE DONE}
+
+\newpage
+
 \section{Introduction}\label{intro}
 %\addcontentsline{toc}{section}{Introduction}
 
-In this thesis we address the challenge of portfolio allocation applied to a set of trading algorithms. The aim here is to allocate risk to many algorithmic trading strategies on a weekly basis. The problem is to be solved in two separate parts: firstly find which strategies out of the many available put into production at any moment in time and at the assign proper risk weights to these strategies. We will see that both the steps are to be addressed with care as none of these problem if solved alone can achieve satisfactory results. All the results will be compared with a proper benchmark that mimics the current non-systematic allocation strategy. If the procedure will be implemented within the firm's trading framework it will make the whole investing process completely systematic. The weekly allocation period is chosen as it fits at best the characteristics of the market of interest and it avoids incurring in excessive transaction costs arousing from daily rebalancing of the portfolio that would erase any improvement given by the selection methodology.\\
-Among the challenges that have been faced we should firstly mention the abundance of strategies that makes our search space highly dimensional and diverse. We should also remind of the well known issue that alpha in algorithmic trading strategies is not everlasting. There is a point in time at which any strategy will stop working and will necessarily be switched off, on the other hand, as a reaction to market changes, some strategies that in the past performed poorly might become alpha generators. Achieving optimal timing in putting into production and switching off the strategies represents a challenge but also an opportunity to significantly increase trading performance.This task is hard to perform in other ways than algorithmic selection because often what is selected might not look intuitive to trade at first sight. To explain what we mean with "non-persistent alpha", that in other words means that inter-market relationships change through time, we make a simple example. For example, if one is trading on the well known relationship between Gold and Silver (which is expected to be steadily meaningful and potentially a good source of alpha), it might be that due to some specific event, or even a change in the microstructure of one of the two futures this correlation breaks down, changing all the underlying market-dynamics and making the trading algorithm unprofitable. Moreover, in some cases, a certain strategy might perform really well for years until somebody in the market starts exploiting it systematically and at higher frequency than what hedge funds and small algorithmic trading firms can actually sustain. In such cases detecting a switching point in the performance of strategies is of crucial importance.\\
-
+\input{Introduction}
 
 %IF WE NEED TO CITE SOMETHING USE: \cite{example}.
 
@@ -148,20 +155,16 @@ Among the challenges that have been faced we should firstly mention the abundanc
 \subsection{Literature Review}
 %\addcontentsline{toc}{subsection}{Literature Review}
 
-The problem of portfolio optimization is one of the oldest and most discussed topics in finance. The traditional theory that has been considered the milestone of Finance for decades has been developed at first by Harry Markowitz who won the Nobel Prize for his article \textit{Portfolio Selection} in 1952 \cite{Markowitz}. The Modern Portfolio Theory that was developed in those years is actually still regarded as the baseline for portfolio managers. The idea is to look at portfolio allocation in a return-risk trade-off context where risk is estimated by past volatility of returns. Unfortunately, Markowitz allocation procedures have some drawbacks, mainly relative to the numerical instability of the estimation of asset returns. Some scholars improved through the years the models trying to add stability. In 1992 a huge step forward was made by Fisher Black and Robert Litterman with their article \textit{Global Portfolio Optimization} \cite{black_litterman} that merged the CAPM equilibrium theory with the mean-variance optimization proposed by Markowitz. Their idea was that incorporating meaningful information coming from CAPM and personal views of portfolio managers would solve the issues of unreasonableness of quantitative portfolios. More recently, an additional step was made by Olivier Ledoit and Michael Wolf whose contribution was to improve the global performance of covariance matrices by introducing the idea of \textit{shrinkage}. This method allows to have more stable covariance matrices and therefore making the Markowitz framework more stable and applicable.  \\
-Many experts from different fields have worked to enrich the knowledge in this specific area. A well-known example is that of Professor Cover, whose work is recognized as one of the finest attempts tu use signal theory in portfolio allocation. With his article \textit{Universal Portfolios} \cite{universal_portfolios} he builds a portfolio, that in terms of performance, asympthotically beats the best stock over a given set of stocks. The interesting part of cover's work is that he attempts to solve the portfolio optimization puzzle in a non-parametric way, using robust results, this unfortunately comes at the expense of not universal applicability.\\
-Recently, with the advent of Machine Learning, many experts started applying powerful algorithms to portfolio selection with interesting results. Any kind of use has been made, from forecasting returns to allocate risk to cluster assets to create well-diversified portfolios. The increase of computational power has allowed to test on large scale portfolios complex algorithms like genetic learning models or neural networks. These have been used in many ways, for example some researchers in the US have trained a one-layer recurrent neural network to dynamically optimize a portfolio \cite{NN_1}. Others tried to forecast asset returns with a specific Hopfield Neural network to input into a traditional mean-variance Markowitz style optimization \cite{NN_2}.\\
-Despite their out-of-sample results are not outstanding, these pieces of work set with others a new path for portfolio optimization that extracts the most information out of the available data. We will follow this path trying to optimize our portfolio using the most information as possible. In particular we will follow the approach of some researches in te area of genetic algorithms \cite{genetic_1} and that of Marcos Lopez de Prado, that aims at building well-diversified portfolios with unsupervised clustering methods \cite{HRP}.\\
-More than 50 years after the first attempt to address the issue of portfolio selection, Markowitz models are still regarded as the baseline model around which all the theory is built. These models still have relevant real-world issues such as ignorance of transaction costs and high instability of the portfolio, but are really intuitive and representative of the dynamics of a rational investor.  
+\input{Literature_Review}
 
 
 \subsection{Our Approach}
 %\addcontentsline{toc}{subsection}{Our Approach}
 
-The "schedule" we set at the beginning is to find firstly a satisfactory method to switch strategies on and off and then move to the part of weight allocation. We will consider the first step to be completed once the resulting selection allows for efficient trading of around a hundredth of strategies with at least half of the trading days with positive pnl. Unfortunately, using very trivial benchmarks is not possible as we will show later with statistics on the data. That means that we will simply choose the best method out of the ones we will elaborate.\\
+The "schedule" we set at the beginning is to find firstly a satisfactory method to switch strategies on and off and then move to the part of risk-weight allocation. We will consider the first step to be completed once the resulting selection allows for efficient trading of maximum a hundredth of strategies with at least half of the trading days with positive pnl. Unfortunately, using very trivial benchmarks is not possible as we will show later with statistics on the data. That means that we will simply choose the best method out of the ones we will elaborate.\\
 To achieve this step a simple and robust feature-based approach has been used. We decided not to try to use any hard-core machine learning type approach to reduce the risk of overfitting and to fit the specificity of the problem. In fact, the abundance of strategies and the lack of a long samples would have made training a machine learning method cumbersome and time-consuming.\\
-Before getting into this part, relevant features are needed to give some predictive insight to our models. To this end we built several different features and evaluated their predictive power through a \textit{Random Forest Tree} (details of this model will be provided later).\\
-For what concerns assigning the weights we developed two different approaches, one of which is more computationally oriented and the other is more diversification-driven. The first approach is to train a genetic portfolio allocator that will select the best portfolio in-sample and then apply iy out of sample. The second approach is based on clustering, and aims at reducing as much as possible the realized variance of the portfolio. The real step forward we are trying to put in place is to use a rigorous and robust statistical approach that uses the experience of machine learning research on much simpler algorithms to enrich the power of linear predictors. We will make use of robust feature importance assessment, we will separate in-sample and out-of-sample periods strictly and we will use adaptive methods that need to work with the minimum number of parameters as possible.\\
+Before getting into this part, relevant features (related exclusively to performance, the only information we have at hand) are needed to give some predictive insight to our models. To this end we built several different features and evaluated their predictive power through a \textit{Random Forest Tree} (details of this model will be provided later).\\
+For what concerns assigning the weights we developed two different approaches, one of which is more computationally oriented and the other is more diversification-driven. The first approach is to train a genetic portfolio allocator that will select the best portfolio in-sample and then trade it out of sample. The second approach is based on clustering, and aims at reducing as much as possible the realized variance of the portfolio. The real step forward we are trying to put in place is to use a rigorous and robust statistical approach that uses the experience of machine learning research on much simpler algorithms to enrich the power of linear predictors. We will make use of robust feature importance assessment, we will separate in-sample and out-of-sample periods strictly and we will use adaptive methods that need to work with the minimum number of parameters as possible.\\
 
 
 \subsection{The data}
@@ -169,16 +172,16 @@ For what concerns assigning the weights we developed two different approaches, o
 
 \input{Data/Data_1}
 
+\subsection{Data Cleaning}
+
+\input{Data/Data_3}
+
 
 \subsection{Some Descriptive Statistics}
 %\addcontentsline{toc}{subsubsection}{Some Descriptive Statistics}
 
 \input{Data/Data_2}
 
-
-\subsection{Data Cleaning}
-
-\input{Data/Data_3}
 
 
 \section{Classic Portfolio Theory}
@@ -196,7 +199,7 @@ For what concerns assigning the weights we developed two different approaches, o
 \input{Portfolio_Theory/N_assets}
 
 
-\subsection{Why aren't Markowitz portfolios optimal?}
+\subsection{Weaknesses of Markowitz Portfolios}
 
 \input{Portfolio_Theory/non_optimality}
 
@@ -211,7 +214,7 @@ For what concerns assigning the weights we developed two different approaches, o
 \input{Portfolio_Theory/performance_metrics}
 
 
-
+\newpage
 
 \section{Part 1: Strategy Selection}
 %\addcontentsline{toc}{section}{Part 1: Strategy Selection}
@@ -219,11 +222,19 @@ For what concerns assigning the weights we developed two different approaches, o
 \subsection{Problem Statement}
 %\addcontentsline{toc}{subsection}{Problem Statement}
 
-We give here an additional re-statement of the problem we try to tackle here. On each monday we have to allocate risk on each of the given strategies by choosing which ones to put into production for the following week. In an ideal world we would switch on all the strategies that will perform well during the following week and vice-versa with the bad ones. Unfortunately this is quite an impossible task, and we just seek a "statistical edge" that allows us to profit from appropriate selection of strategies on the long run.\\
-For this first part we focus only on activating or de-activating the algorithms, we don't care about the risk weight to give to strategies (the output will be a $\{1,0\}$ signal).
+We give here an additional re-statement of the problem we try to tackle here. On each Monday, we have to allocate risk on each of the given strategies by choosing which ones to put into production for the following week. In an ideal world we would switch on all the strategies that will perform well during the following week and vice-versa with the bad ones. Unfortunately this is quite an impossible task, and we just seek a "statistical edge" that allows us to profit from appropriate selection of strategies on the long run.\\
+For this first part we focus only on activating or de-activating the algorithms, we don't care about the risk weight to give to strategies (the output will be a $\{1,0\}$ signal). In more mathematical terms let's define each week the vector $\mathbf{w} \in \mathbb{R}^N$ where $N$ is the number of assets. This vector will be composed only of zeros or ones. Let's also consider the vector $\mathbf{r} \in \mathbb{R}^N$ that contains all the returns of each strategy over the next week. Our weekly problem can be formulated as:
+
+
+\begin{equation} \label{problem_statement}
+\argmax \limits_{\mathbf{w}} \quad sharpe\_ratio(\mathbf{w}^\top\mathbf{r}) + sortino\_ratio(\mathbf{w}^\top\mathbf{r})
+\end{equation}
+
+As you can see we will look at both Sharpe Ratio and Sortino-Ratio to evaluate the performance of our portfolio-building model.
+Of course we don't have a closed formula solution for this problem. We will implement algorithmic procedures aiming to achieve this target.\\
+
 
 \subsection{Building the Features}
-%\addcontentsline{toc}{subsection}{Building the Features}
 
 \input{Part_1/building_features}
 
@@ -241,8 +252,16 @@ For this first part we focus only on activating or de-activating the algorithms,
 \subsection{Switching Model}
 %\addcontentsline{toc}{subsection}{Switching Model}
 
-Here we dwelve into the challenge of finding an optimal subset of all the strategies to put in production for a given week. The model here should just tell us whether a strategy is good or bad for the coming week.\\
-As opposed to a traditional machine learning model, we want something more simple, interpretable and faster. Following the results of our random forest tree classifier we decided to base our models on robust thresholds or ranking of strategies. The reasons for dropping cutting-edge machine learning methods in this context are multiple: first we don't have many samples per strategy to be able to train machine learning models. If we had more data, a Neural Network could for example learn the complex relationships between feature behaviour and future performance of the strategy, but since we have little amounts of data per strategy this could be hardly achievable. It is quite clear that in this context we are aiming at training individually each strategy, as trying to fit many different strategies in one model is definitely not optimal.\\
+Here we face the challenge of finding an optimal subset of all the strategies to put in production for a given week. The model here should just tell us whether a strategy is good or bad for the coming week.\\
+As opposed to a traditional machine learning model, we want something more simple, interpretable and faster. Following the results of our random forest tree classifier we decided to base our models on robust thresholds or ranking of strategies. The reasons for dropping cutting-edge machine learning methods in this context are multiple:
+
+\begin{itemize}
+	\item first we don't have many samples per strategy to be able to train machine learning models. So would somehow have to mix training and results for all the strategies.
+	\item If we had more data, a Neural Network could for example learn the complex relationships between feature behaviour and future performance of the strategy, but since we have little amounts of data per strategy this could be hardly achievable.
+	\item It is quite clear that in this context we are aiming at training individually each strategy, as trying to fit many different strategies in one model is definitely not optimal.
+	\item At last, we want our model to have some "economic sense" and underlying intuition to be more understandable and controllable. We want to avoid using black-boxes that we don't know how to control.
+\end{itemize} 
+  
 We have tested several different models and evaluated them based on the performance they provided. This performance is not only a function of raw PnL, but is at first risk-adjusted and secondarily it takes into account how volatile the allocation is. It is well established that some interesting theoretical models just don't work in the real world because of transaction-costs and implementation issues. We want to avoid falling into this problem, finding something that works really well in-sample but then requires to completely reshuffle the portfolio each week killing any kind of intrinsic alpha.
 Each model will require to fit various parameters, therefore we will perform in-sample gridsearches looking for pseudo-optimal parameters trying to avoid overfitting. That means we will look at the results with common sense, if we will find very surprising numbers we will dwelve in the nature of these parameters, and eventually we might not validate the results we see.\\
 
@@ -250,18 +269,15 @@ Each model will require to fit various parameters, therefore we will perform in-
 \subsection{First Tests}
 %\addcontentsline{toc}{subsection}{First Tests}
 
-We run different tests (in our in-sample period) to see which meaningful combination of features could come up with a proper switching model. At first, we tried to base our models only on one feature and it turned out that using only one feature was not enough as the data is really diverse and many strategies have very poor performance. This fact forced us to somehow use a second feature to act as a filter that would wipe out of the full set of strategies a huge majority that had not been performing well in the past. We directed our endeavours towards finding this meaningful filter of strategies. What this filter has to do, is to look at the past performance of any single strategy and set a threshold below which even if the current performance is good this strategy would not be switched on. The reason for this is that many strategies have some very short period where they work well due to specific market conditions that don't last for long. We luckily have a huge wealth of strategies and we can afford being strict in selecting strategies giving more strength to our method. After some tests and discussions we decided that a good filter is given by a long-window rolling-sharpe ratio. This feature looks at the performance of a strategy and computes with a certain rolling window the Sharpe. Then we look at the resulting time series and we require the sharpe to be sufficiently good over a certain window in history. In other words, every Monday the historical x-days sharpe ratio for each strategy is computed and if we are able to find  a period of x-days when a strategy performed sufficiently well in terms of sharpe we believe this is a strategy that can be switched on and off in the future. Evidence will show that this lookback window should be quite long, proving that the strategy has been working for quite a long time in the past (See following parts). Once this filter is applied, the remaining features are switched according to information coming from another feature that we will explore in the following part.\\
-Armed with this tool we started building many different models with all the features we had at hand. Results showed that the Random Forest tree was almost always right in estimating the predictive power of features. In fact, we noticed that portfolios based on features like Exponential Moving Averages and Hit Ratio (features with low predictive power) didn't perform as well as portfolios based on Sharpe-ratio.
-
-Moreover, an interesting aspect to analyize is the set of strategies switched by these methods, it seems that they tend to select very similar strategies as the ones switched by the Sharpe-Ratio based portfolios, but with much worse market timing.\\
+\input{Switch_Models/First_Tests}
 
 \subsection{Method 1: Pure Sharpe}
+
 \input{Switch_Models/Method_1}
 
 
-
 \subsection{Method 2: Ranking Based}
-%\addcontentsline{toc}{subsection}{Method 2: Ranking Based}
+
 
 \input{Switch_Models/Method_2}
 
@@ -274,7 +290,7 @@ Moreover, an interesting aspect to analyize is the set of strategies switched by
 
 \input{Switch_Models/Method_4}
 
-\subsection{Method 5: Threshold Backtest}
+\subsection{Method 5: Threshold Optimization}
 
 \input{Switch_Models/Method_5}
 
