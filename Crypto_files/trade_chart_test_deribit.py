@@ -15,6 +15,7 @@ from mpl_tweak_module import set_params
 
 from trade_master_deribit import TradeManager
 from threading import Thread
+import time
 
 set_params()
 
@@ -53,6 +54,7 @@ def update_figure():
     
     ax2.plot(times, qtys, marker = 'o', markersize=2)
     
+    plt.pause(0.2)
     plt.show()
 
 
@@ -73,5 +75,11 @@ plt.show()
 #%%
 
 # aggiornamento brutale
-update_figure()
+while True:
+    
+    try:
+        update_figure()
+        time.sleep(1)
+    except(KeyboardInterrupt):
+        break
 
